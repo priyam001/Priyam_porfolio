@@ -2010,59 +2010,6 @@
             document.body.style.overflow = '';
         }
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-    </script>
-    const name = document.getElementById('form-name').value;
-    const email = document.getElementById('form-email').value;
-    const msg = document.getElementById('form-message').value;
-    if (!name || !email || !msg) { alert('Please fill in all fields.'); return; }
-    const subject = encodeURIComponent(`Portfolio Contact from ${name}`);
-    const body = encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${msg}`);
-    window.location.href = `mailto:priyampatel9911@gmail.com?subject=${subject}&body=${body}`;
-    document.getElementById('form-status').style.display = 'block';
-    }// ─── VISITOR COUNTER ───
-    // Uses countapi.xyz — free, no signup, persists across all visitors globally.
-    // namespace: your domain/identifier, key: unique page key
-    (async function() {
-    const NAMESPACE = 'priyampatel-portfolio';
-    const KEY = 'visits-v1';
-    const el = document.getElementById('vc-num');
-
-    // Track session so we only increment once per browser session
-    const SESSION_KEY = 'pp_visited';
-    const alreadyCounted = sessionStorage.getItem(SESSION_KEY);
-
-    try {
-    let url;
-    if (!alreadyCounted) {
-    // Hit the 'hit' endpoint — increments and returns new count
-    url = `https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`;
-    sessionStorage.setItem(SESSION_KEY, '1');
-    } else {
-    // Already counted this session — just read the current value
-    url = `https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`;
-    }
-
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('API error');
-    const data = await res.json();
-    const count = data.value;
-
-    // Animate the number rolling up
-    let current = Math.max(0, count - 30);
-    const step = Math.ceil((count - current) / 20);
-    const roll = setInterval(() => {
-    current = Math.min(current + step, count);
-    el.textContent = current.toLocaleString();
-    if (current >= count) clearInterval(roll);
-    }, 40);
-
-    } catch (e) {
-    // Fallback: silently show dashes if API is unavailable (ad blocker, offline, etc.)
-    el.textContent = '—';
-    console.warn('Visitor counter unavailable:', e.message);
-    }
-    })();
-    </script>
 </body>
 
 </html>
