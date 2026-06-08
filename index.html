@@ -322,16 +322,24 @@
             transition: all 0.3s;
             cursor: pointer;
             border: none;
+            -webkit-appearance: none;
+            appearance: none;
+            background-clip: padding-box;
+            -webkit-font-smoothing: antialiased;
         }
 
         .btn-primary {
-            background: var(--cyan);
-            color: var(--navy);
+            background: var(--cyan) !important;
+            color: var(--navy) !important;
             font-weight: 700;
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
         }
 
         .btn-primary:hover {
-            background: #fff;
+            background: #00eeff !important;
+            color: var(--navy) !important;
             box-shadow: 0 0 30px var(--cyan-glow);
             transform: translateY(-2px);
         }
@@ -2013,14 +2021,17 @@
 
         // ─── CONTACT FORM ───
         function sendMessage() {
-            const name = document.getElementById('form-name').value;
-            const email = document.getElementById('form-email').value;
-            const msg = document.getElementById('form-message').value;
+            const name = document.getElementById('form-name').value.trim();
+            const email = document.getElementById('form-email').value.trim();
+            const msg = document.getElementById('form-message').value.trim();
             if (!name || !email || !msg) { alert('Please fill in all fields.'); return; }
             const subject = encodeURIComponent('Portfolio Contact from ' + name);
             const body = encodeURIComponent('From: ' + name + '\nEmail: ' + email + '\n\n' + msg);
             window.location.href = 'mailto:priyampatel9911@gmail.com?subject=' + subject + '&body=' + body;
-            document.getElementById('form-status').style.display = 'block';
+            const status = document.getElementById('form-status');
+            status.style.display = 'block';
+            // auto-hide after 4 seconds
+            setTimeout(() => { status.style.display = 'none'; }, 4000);
         }
 
         // ─── VISITOR COUNTER ───
