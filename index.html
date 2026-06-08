@@ -1902,46 +1902,60 @@
         }
 
         // ════════════════════════════════════════════════════
-        // ⚡ CERTIFICATE CONFIG — edit this array to add/remove certs
-        // To add a new cert: copy one object, fill in the fields.
-        // image: path to file in Certificate/ folder (leave null if no image)
+        // ⚡ CERTIFICATE CONFIG
+        // ── HOW TO ADD A NEW CERT ──────────────────────────
+        // 1. Upload the image to your GitHub repo inside the
+        //    "Certificate/" folder and commit/push.
+        // 2. Add a new object below — just copy any existing one.
+        // 3. Save & push index.html — page updates automatically.
+        //
+        // GitHub raw URL format (already set in GITHUB_BASE):
+        //   https://raw.githubusercontent.com/USERNAME/REPO/main/Certificate/filename.jpg
         // ════════════════════════════════════════════════════
+
+        // ── SET YOUR GITHUB DETAILS ONCE HERE ───────────────
+        const GITHUB_USER = 'priyam001';
+        const GITHUB_REPO = 'priyam001.github.io';   // your repo name (change if different)
+        const GITHUB_BRANCH = 'main';                 // 'main' or 'master'
+        const GITHUB_BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/Certificate/`;
+        // ────────────────────────────────────────────────────
+
         const CERTIFICATES = [
             {
                 name: "CrowdStrike Incident Response & Threat Hunting",
                 issuer: "CrowdStrike",
                 year: "2026",
-                image: null   // no image yet — upload to Certificate/ and add filename
+                image: null   // upload image to Certificate/ folder then add: GITHUB_BASE + 'filename.jpg'
             },
             {
                 name: "Cloud Application Protection Certification",
                 issuer: "Radware",
                 year: "2026",
-                image: "Certificate/1771057719768.jpg"
+                image: GITHUB_BASE + '1771057719768.jpg'
             },
             {
                 name: "Application Protection",
                 issuer: "Radware",
                 year: "2026",
-                image: "Certificate/1771057719732.jpg"
+                image: GITHUB_BASE + '1771057719732.jpg'
             },
             {
                 name: "Linux Privilege Escalation for Beginners",
                 issuer: "TCM Security",
                 year: "2024",
-                image: "Certificate/1704905398096.jpg"
+                image: GITHUB_BASE + '1704905398096.jpg'
             },
             {
                 name: "Windows Privilege Escalation for Beginners",
                 issuer: "TCM Security",
                 year: "2024",
-                image: "Certificate/1704905398147.jpg"
+                image: GITHUB_BASE + '1704905398147.jpg'
             },
             {
                 name: "Cyber Threat Intelligence 101",
                 issuer: "arcX",
                 year: "2023",
-                image: "Certificate/1691027716657.jpg"
+                image: GITHUB_BASE + '1691027716657.jpg'
             },
             {
                 name: "MITRE ATT&CK & Purple Teaming Fundamentals",
@@ -1949,8 +1963,8 @@
                 year: "—",
                 image: null
             }
-            // ── ADD MORE BELOW ──
-            // { name: "Your Cert Name", issuer: "Issuer", year: "2025", image: "Certificate/filename.jpg" },
+            // ── ADD MORE BELOW ──────────────────────────────
+            // { name: "Cert Name", issuer: "Issuer", year: "2025", image: GITHUB_BASE + 'filename.jpg' },
         ];
 
         // ─── RENDER CERTS DYNAMICALLY ───
@@ -2010,6 +2024,65 @@
             document.body.style.overflow = '';
         }
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+        // ─── CONTACT FORM ───
+        function sendMessage() {
+            const name = document.getElementById('form-name').value;
+            const email = document.getElementById('form-email').value;
+            const msg = document.getElementById('form-message').value;
+            if (!name || !email || !msg) { alert('Please fill in all fields.'); return; }
+            const subject = encodeURIComponent(`Portfolio Contact from ${name}`);
+            const body = encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${msg}`);
+            window.location.href = `mailto:priyampatel9911@gmail.com?subject=${subject}&body=${body}`;
+            document.getElementById('form-status').style.display = 'block';
+        }
+
+        // ─── VISITOR COUNTER ───
+        // Uses api.counterapi.dev — free, live, no signup needed.
+        // sessionStorage prevents double-counting on page refresh.
+        (async function () {
+            const el = document.getElementById('vc-num');
+            if (!el) return;
+
+            // ── CONFIG ──────────────────────────────────────────
+            const NS = 'priyampatel';       // your unique namespace
+            const KEY = 'portfolio-v1';      // change to reset counter
+            // ────────────────────────────────────────────────────
+
+            const alreadyCounted = sessionStorage.getItem('pp_visited');
+
+            try {
+                // /up  → increment + return new count
+                // GET  → read-only current count
+                const url = alreadyCounted
+                    ? `https://api.counterapi.dev/v1/${NS}/${KEY}`
+                    : `https://api.counterapi.dev/v1/${NS}/${KEY}/up`;
+
+                if (!alreadyCounted) sessionStorage.setItem('pp_visited', '1');
+
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                // counterapi.dev returns { count: N }
+                const total = data.count ?? data.value ?? 0;
+
+                // roll-up animation
+                let cur = Math.max(0, total - 40);
+                const step = Math.max(1, Math.ceil((total - cur) / 25));
+                const t = setInterval(() => {
+                    cur = Math.min(cur + step, total);
+                    el.textContent = cur.toLocaleString();
+                    if (cur >= total) clearInterval(t);
+                }, 35);
+
+            } catch (err) {
+                el.textContent = '—';
+                console.warn('[VisitorCounter]', err.message);
+            }
+        })();
+
+    </script>
 </body>
 
 </html>
