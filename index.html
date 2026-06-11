@@ -1,2076 +1,1899 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Priyam Patel - SOC Analyst | DFIR | Microsoft Sentinel | CrowdStrike | Threat Hunting | Incident Response">
-    <title>Priyam Patel | SOC Analyst & DFIR Specialist</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        :root {
-            --navy: #060d1a;
-            --navy2: #0b1628;
-            --navy3: #101f38;
-            --cyan: #00d4ff;
-            --cyan-dim: rgba(0, 212, 255, 0.15);
-            --cyan-glow: rgba(0, 212, 255, 0.4);
-            --purple: #7c3aed;
-            --purple-dim: rgba(124, 58, 237, 0.15);
-            --green: #00ff88;
-            --text: #c8d8f0;
-            --text-dim: #5c7a9e;
-            --border: rgba(0, 212, 255, 0.12);
-            --glass: rgba(11, 22, 40, 0.7);
-        }
-
-        *,
-        *::before,
-        *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--navy);
-            color: var(--text);
-            overflow-x: hidden;
-            font-size: 15px;
-            line-height: 1.7;
-        }
-
-        /* ─── LOADING ─── */
-        #loader {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: var(--navy);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 20px;
-            transition: opacity 0.6s ease;
-        }
-
-        #loader.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loader-text {
-            font-family: 'DM Mono', monospace;
-            color: var(--cyan);
-            font-size: 13px;
-            letter-spacing: 3px;
-            animation: blink 1s step-end infinite;
-        }
-
-        .loader-bar {
-            width: 200px;
-            height: 2px;
-            background: var(--navy3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .loader-bar::after {
-            content: '';
-            position: absolute;
-            left: -100%;
-            top: 0;
-            height: 100%;
-            width: 60%;
-            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-            animation: scan 0.9s ease-in-out forwards;
-        }
-
-        @keyframes scan {
-            to {
-                left: 200%;
-            }
-        }
-
-        @keyframes blink {
-            50% {
-                opacity: 0.3;
-            }
-        }
-
-        /* ─── CANVAS PARTICLES ─── */
-        #particles {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* ─── NAV ─── */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            backdrop-filter: blur(20px);
-            background: rgba(6, 13, 26, 0.85);
-            border-bottom: 1px solid var(--border);
-            padding: 0 5%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 62px;
-            transition: box-shadow 0.3s;
-        }
-
-        nav.scrolled {
-            box-shadow: 0 0 40px rgba(0, 212, 255, 0.05);
-        }
-
-        .nav-logo {
-            font-family: 'Syne', sans-serif;
-            font-size: 18px;
-            font-weight: 800;
-            color: #fff;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-logo span {
-            color: var(--cyan);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            letter-spacing: 1.5px;
-            color: var(--text-dim);
-            text-decoration: none;
-            text-transform: uppercase;
-            transition: color 0.2s;
-            position: relative;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--cyan);
-            transition: width 0.3s;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--cyan);
-        }
-
-        .nav-links a:hover::after,
-        .nav-links a.active::after {
-            width: 100%;
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .hamburger span {
-            display: block;
-            width: 24px;
-            height: 2px;
-            background: var(--cyan);
-            transition: all 0.3s;
-        }
-
-        /* ─── SECTIONS ─── */
-        section {
-            position: relative;
-            z-index: 1;
-            padding: 100px 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* ─── HERO ─── */
-        #hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding-top: 62px;
-            max-width: 100%;
-        }
-
-        .hero-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 5%;
-            width: 100%;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 2px;
-            color: var(--cyan);
-            text-transform: uppercase;
-            border: 1px solid var(--border);
-            padding: 6px 14px;
-            border-radius: 2px;
-            margin-bottom: 28px;
-            background: var(--cyan-dim);
-        }
-
-        .hero-badge::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 8px var(--green);
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-
-            0%,
-            100% {
-                opacity: 1;
-                box-shadow: 0 0 8px var(--green);
-            }
-
-            50% {
-                opacity: 0.5;
-                box-shadow: 0 0 3px var(--green);
-            }
-        }
-
-        .hero-name {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(48px, 8vw, 96px);
-            font-weight: 800;
-            line-height: 1;
-            letter-spacing: -2px;
-            color: #fff;
-            margin-bottom: 16px;
-        }
-
-        .hero-name .accent {
-            color: var(--cyan);
-        }
-
-        .hero-typing {
-            font-family: 'DM Mono', monospace;
-            font-size: clamp(14px, 2vw, 18px);
-            color: var(--cyan);
-            min-height: 28px;
-            margin-bottom: 20px;
-        }
-
-        .cursor {
-            animation: blink 1s step-end infinite;
-        }
-
-        .hero-tagline {
-            font-size: 16px;
-            color: var(--text-dim);
-            max-width: 560px;
-            line-height: 1.8;
-            margin-bottom: 44px;
-        }
-
-        .hero-cta {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 14px 30px;
-            border-radius: 2px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            -webkit-appearance: none;
-            appearance: none;
-            background-clip: padding-box;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .btn-primary {
-            background: var(--cyan) !important;
-            color: var(--navy) !important;
-            font-weight: 700;
-            -webkit-appearance: none;
-            appearance: none;
-            outline: none;
-        }
-
-        .btn-primary:hover {
-            background: #00eeff !important;
-            color: var(--navy) !important;
-            box-shadow: 0 0 30px var(--cyan-glow);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--cyan);
-            border: 1px solid var(--cyan);
-        }
-
-        .btn-secondary:hover {
-            background: var(--cyan-dim);
-            box-shadow: 0 0 20px var(--cyan-glow);
-            transform: translateY(-2px);
-        }
-
-        .hero-contacts {
-            display: flex;
-            gap: 24px;
-            margin-top: 56px;
-            flex-wrap: wrap;
-        }
-
-        .hero-contact-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            color: var(--text-dim);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .hero-contact-item:hover {
-            color: var(--cyan);
-        }
-
-        .hero-contact-item i {
-            color: var(--cyan);
-            font-size: 13px;
-        }
-
-        /* ─── SECTION TITLE ─── */
-        .section-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--cyan);
-            margin-bottom: 10px;
-        }
-
-        .section-title {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(32px, 5vw, 52px);
-            font-weight: 800;
-            letter-spacing: -1px;
-            color: #fff;
-            margin-bottom: 16px;
-            line-height: 1.1;
-        }
-
-        .section-rule {
-            width: 48px;
-            height: 2px;
-            background: var(--cyan);
-            margin-bottom: 60px;
-        }
-
-        /* ─── ABOUT ─── */
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-
-        .about-text p {
-            color: var(--text-dim);
-            font-size: 16px;
-            line-height: 1.9;
-            margin-bottom: 20px;
-        }
-
-        .about-text p strong {
-            color: var(--text);
-        }
-
-        .about-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .stat-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 24px 20px;
-            border-radius: 4px;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s, transform 0.3s;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--cyan), var(--purple));
-        }
-
-        .stat-card:hover {
-            border-color: var(--cyan);
-            transform: translateY(-4px);
-        }
-
-        .stat-num {
-            font-family: 'Syne', sans-serif;
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--cyan);
-            line-height: 1;
-            margin-bottom: 6px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-dim);
-            letter-spacing: 0.5px;
-        }
-
-        /* ─── EXPERIENCE ─── */
-        .timeline {
-            position: relative;
-            padding-left: 32px;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 8px;
-            bottom: 0;
-            width: 1px;
-            background: linear-gradient(180deg, var(--cyan), transparent);
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 52px;
-            opacity: 0;
-            transform: translateX(-20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .timeline-item.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: -38px;
-            top: 6px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 2px solid var(--cyan);
-            background: var(--navy);
-            box-shadow: 0 0 12px var(--cyan-glow);
-        }
-
-        .timeline-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 28px 32px;
-            border-radius: 4px;
-            backdrop-filter: blur(10px);
-            transition: border-color 0.3s;
-        }
-
-        .timeline-card:hover {
-            border-color: rgba(0, 212, 255, 0.3);
-        }
-
-        .timeline-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .timeline-role {
-            font-family: 'Syne', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .timeline-date {
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 1px;
-            color: var(--cyan);
-            background: var(--cyan-dim);
-            padding: 4px 12px;
-            border-radius: 2px;
-            white-space: nowrap;
-        }
-
-        .timeline-company {
-            font-family: 'DM Mono', monospace;
-            font-size: 13px;
-            color: var(--text-dim);
-            margin-bottom: 18px;
-        }
-
-        .timeline-list {
-            list-style: none;
-        }
-
-        .timeline-list li {
-            padding: 5px 0 5px 18px;
-            position: relative;
-            color: var(--text-dim);
-            font-size: 14px;
-        }
-
-        .timeline-list li::before {
-            content: '▸';
-            position: absolute;
-            left: 0;
-            color: var(--cyan);
-            font-size: 10px;
-            top: 7px;
-        }
-
-        /* ─── SKILLS ─── */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-        }
-
-        .skill-category {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 28px;
-            border-radius: 4px;
-            backdrop-filter: blur(10px);
-            transition: border-color 0.3s, transform 0.3s;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.3s;
-        }
-
-        .skill-category.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .skill-category:hover {
-            border-color: rgba(0, 212, 255, 0.3);
-            transform: translateY(-4px);
-        }
-
-        .skill-cat-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--cyan);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .skill-cat-title i {
-            font-size: 16px;
-        }
-
-        .skill-tag {
-            display: inline-block;
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            padding: 5px 12px;
-            border-radius: 2px;
-            margin: 4px 4px 4px 0;
-            background: var(--navy3);
-            border: 1px solid var(--border);
-            color: var(--text);
-            letter-spacing: 0.5px;
-            transition: all 0.2s;
-        }
-
-        .skill-tag:hover {
-            border-color: var(--cyan);
-            color: var(--cyan);
-            background: var(--cyan-dim);
-        }
-
-        /* ─── PROJECTS ─── */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 28px;
-        }
-
-        .project-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 36px;
-            border-radius: 4px;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s, transform 0.3s;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s, transform 0.5s, border-color 0.3s;
-        }
-
-        .project-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .project-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at top left, var(--cyan-dim), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-
-        .project-card:hover {
-            border-color: rgba(0, 212, 255, 0.4);
-            transform: translateY(-6px);
-        }
-
-        .project-card:hover::after {
-            opacity: 1;
-        }
-
-        .project-icon {
-            font-size: 28px;
-            color: var(--cyan);
-            margin-bottom: 20px;
-        }
-
-        .project-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 14px;
-            line-height: 1.3;
-        }
-
-        .project-desc {
-            color: var(--text-dim);
-            font-size: 14px;
-            line-height: 1.8;
-            margin-bottom: 24px;
-        }
-
-        .project-link {
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            letter-spacing: 1px;
-            color: var(--cyan);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.2s;
-        }
-
-        .project-link:hover {
-            border-color: var(--cyan);
-        }
-
-        /* ─── ACHIEVEMENTS ─── */
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .achievement-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 32px 24px;
-            border-radius: 4px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s, transform 0.3s;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: opacity 0.4s, transform 0.4s, border-color 0.3s;
-        }
-
-        .achievement-card.visible {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .achievement-card:hover {
-            border-color: var(--cyan);
-            transform: translateY(-6px);
-        }
-
-        .achievement-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--purple), var(--cyan));
-        }
-
-        .achievement-num {
-            font-family: 'Syne', sans-serif;
-            font-size: 44px;
-            font-weight: 800;
-            color: var(--cyan);
-            line-height: 1;
-            margin-bottom: 10px;
-        }
-
-        .achievement-label {
-            font-size: 13px;
-            color: var(--text-dim);
-            line-height: 1.5;
-        }
-
-        /* ─── CERTIFICATIONS (dynamic) ─── */
-        .certs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .cert-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            backdrop-filter: blur(10px);
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(16px);
-            transition: opacity 0.4s, transform 0.4s, border-color 0.3s, box-shadow 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .cert-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .cert-card.has-image {
-            cursor: pointer;
-        }
-
-        .cert-card.has-image:hover {
-            border-color: var(--cyan);
-            box-shadow: 0 0 24px var(--cyan-glow);
-            transform: translateY(-5px);
-        }
-
-        .cert-card:not(.has-image):hover {
-            border-color: rgba(0, 212, 255, 0.3);
-            transform: translateY(-4px);
-        }
-
-        .cert-thumb-wrap {
-            width: 100%;
-            height: 160px;
-            overflow: hidden;
-            position: relative;
-            background: var(--navy3);
-            flex-shrink: 0;
-        }
-
-        .cert-thumb-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.4s ease;
-        }
-
-        .cert-card.has-image:hover .cert-thumb-wrap img {
-            transform: scale(1.06);
-        }
-
-        .cert-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 212, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .cert-card.has-image:hover .cert-overlay {
-            opacity: 1;
-        }
-
-        .cert-overlay i {
-            font-size: 32px;
-            color: #fff;
-            text-shadow: 0 0 16px var(--cyan);
-        }
-
-        .cert-no-img {
-            width: 100%;
-            height: 110px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--navy3);
-            font-size: 36px;
-            color: var(--cyan);
-            opacity: 0.35;
-        }
-
-        .cert-info {
-            padding: 18px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex: 1;
-        }
-
-        .cert-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            line-height: 1.4;
-        }
-
-        .cert-issuer {
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            color: var(--cyan);
-            letter-spacing: 0.5px;
-        }
-
-        .cert-year {
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            color: var(--text-dim);
-        }
-
-        .cert-badge {
-            margin-top: 8px;
-            align-self: flex-start;
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            padding: 3px 10px;
-            border-radius: 2px;
-            background: var(--cyan-dim);
-            color: var(--cyan);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-        }
-
-        /* ─── LIGHTBOX ─── */
-        #lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 10000;
-            background: rgba(4, 9, 18, 0.96);
-            backdrop-filter: blur(18px);
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-
-        #lightbox.open {
-            display: flex;
-            animation: lbFadeIn 0.25s ease forwards;
-        }
-
-        @keyframes lbFadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .lb-close {
-            position: absolute;
-            top: 24px;
-            right: 28px;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text);
-            font-size: 18px;
-            transition: all 0.2s;
-            z-index: 2;
-        }
-
-        .lb-close:hover {
-            background: var(--cyan-dim);
-            color: var(--cyan);
-            border-color: var(--cyan);
-        }
-
-        .lb-inner {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            max-width: 900px;
-            width: 100%;
-            animation: lbSlideUp 0.3s ease forwards;
-        }
-
-        @keyframes lbSlideUp {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        #lb-img {
-            max-width: 100%;
-            max-height: 72vh;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            box-shadow: 0 0 60px rgba(0, 212, 255, 0.2);
-            display: block;
-        }
-
-        #lb-caption {
-            font-family: 'Syne', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-            text-align: center;
-        }
-
-        #lb-meta {
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            color: var(--text-dim);
-            letter-spacing: 1px;
-            text-align: center;
-        }
-
-        /* ─── EDUCATION ─── */
-        .edu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        .edu-card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 32px;
-            border-radius: 4px;
-            backdrop-filter: blur(10px);
-            transition: border-color 0.3s, transform 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .edu-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 3px;
-            background: linear-gradient(180deg, var(--cyan), var(--purple));
-        }
-
-        .edu-card:hover {
-            border-color: rgba(0, 212, 255, 0.3);
-            transform: translateY(-4px);
-        }
-
-        .edu-degree {
-            font-family: 'Syne', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .edu-school {
-            color: var(--cyan);
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .edu-location {
-            color: var(--text-dim);
-            font-size: 13px;
-        }
-
-        /* ─── CONTACT ─── */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-        }
-
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .contact-link {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            text-decoration: none;
-            color: var(--text);
-            padding: 18px 22px;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
-        }
-
-        .contact-link:hover {
-            border-color: var(--cyan);
-            color: var(--cyan);
-            transform: translateX(6px);
-        }
-
-        .contact-link i {
-            font-size: 18px;
-            color: var(--cyan);
-            width: 24px;
-            text-align: center;
-        }
-
-        .contact-detail {
-            font-size: 14px;
-        }
-
-        .contact-form {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 2px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 14px 18px;
-            border-radius: 4px;
-            color: var(--text);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            transition: border-color 0.3s;
-            outline: none;
-            resize: none;
-            backdrop-filter: blur(10px);
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: var(--cyan);
-        }
-
-        .form-group textarea {
-            height: 130px;
-        }
-
-        /* ─── FOOTER ─── */
-        footer {
-            position: relative;
-            z-index: 1;
-            border-top: 1px solid var(--border);
-            padding: 32px 5%;
-            text-align: center;
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            color: var(--text-dim);
-            letter-spacing: 1px;
-        }
-
-        footer span {
-            color: var(--cyan);
-        }
-
-        /* ─── SCROLL TOP ─── */
-        #scroll-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 999;
-            width: 44px;
-            height: 44px;
-            background: var(--navy3);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--cyan);
-            font-size: 16px;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s;
-        }
-
-        #scroll-top.visible {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        #scroll-top:hover {
-            background: var(--cyan-dim);
-            border-color: var(--cyan);
-        }
-
-        /* ─── REVEAL ─── */
-        .reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 900px) {
-
-            .about-grid,
-            .contact-grid,
-            .edu-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .nav-links {
-                display: none;
-                position: fixed;
-                inset: 62px 0 0 0;
-                background: var(--navy);
-                flex-direction: column;
-                padding: 40px 5%;
-                gap: 24px;
-            }
-
-            .nav-links.open {
-                display: flex;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            .hero-name {
-                letter-spacing: -1px;
-            }
-
-            section {
-                padding: 70px 5%;
-            }
-
-            .achievements-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .achievements-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .about-stats {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ─── VISITOR COUNTER ─── */
-        #visitor-counter {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            z-index: 999;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(16px);
-            padding: 10px 18px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            color: var(--text-dim);
-            transition: border-color 0.3s, transform 0.3s;
-            opacity: 0;
-            transform: translateY(10px);
-            animation: fadeUpIn 0.6s ease 2s forwards;
-        }
-
-        @keyframes fadeUpIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        #visitor-counter:hover {
-            border-color: var(--cyan);
-        }
-
-        #visitor-counter .vc-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 6px var(--green);
-            animation: pulse-dot 2s ease-in-out infinite;
-            flex-shrink: 0;
-        }
-
-        #visitor-counter .vc-count {
-            color: var(--cyan);
-            font-weight: 500;
-            min-width: 28px;
-            text-align: center;
-        }
-
-        #visitor-counter .vc-label {
-            letter-spacing: 1px;
-        }
-
-        /* ─── GRID BG ─── */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background-image:
-                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Priyam Patel — SOC Analyst | DFIR | Microsoft Sentinel | CrowdStrike | Threat Hunting | Incident Response">
+  <meta name="theme-color" content="#060d1a">
+  <title>Priyam Patel | SOC Analyst &amp; DFIR Specialist</title>
+
+  <!-- Preconnect for font performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    /* ═══════════════════════════════════════════
+       DESIGN TOKENS
+       Text contrast ratios vs navy (#060d1a):
+         --text      #d8e8f8  →  10.6:1  (WCAG AAA ✓)
+         --text-mid  #a8c4dc  →   6.5:1  (WCAG AA  ✓)
+         --text-dim  #7899bb  →   4.1:1  (WCAG AA on large text ✓)
+         --cyan      #00d4ff  →   8.4:1  (WCAG AAA ✓)
+    ═══════════════════════════════════════════ */
+    :root {
+      --navy:        #060d1a;
+      --navy2:       #0b1628;
+      --navy3:       #101f38;
+      --navy4:       #162540;
+      --cyan:        #00d4ff;
+      --cyan-dim:    rgba(0,212,255,.12);
+      --cyan-glow:   rgba(0,212,255,.35);
+      --cyan-soft:   rgba(0,212,255,.06);
+      --purple:      #7c3aed;
+      --purple-dim:  rgba(124,58,237,.15);
+      --green:       #00e87a;
+      --green-dim:   rgba(0,232,122,.12);
+      --text:        #d8e8f8;
+      --text-mid:    #a8c4dc;
+      --text-dim:    #7899bb;
+      --border:      rgba(0,212,255,.12);
+      --border-hover:rgba(0,212,255,.30);
+      --glass:       rgba(11,22,40,.72);
+      --glass-hover: rgba(11,22,40,.88);
+      --radius:      4px;
+      --transition:  0.25s ease;
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+
+    /* Respect reduced-motion preference */
+    @media (prefers-reduced-motion:reduce) {
+      *, *::before, *::after {
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:.01ms !important;
+        scroll-behavior:auto !important;
+      }
+    }
+
+    /* ─── BASE ─── */
+    body {
+      font-family:'DM Sans',sans-serif;
+      background:var(--navy);
+      color:var(--text);
+      overflow-x:hidden;
+      font-size:15px;
+      line-height:1.7;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* ─── SKIP LINK (a11y) ─── */
+    .skip-link {
+      position:absolute;
+      top:-100%;
+      left:16px;
+      background:var(--cyan);
+      color:var(--navy);
+      font-family:'DM Mono',monospace;
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:1px;
+      padding:10px 20px;
+      border-radius:0 0 4px 4px;
+      text-decoration:none;
+      z-index:20000;
+      transition:top .2s ease;
+    }
+    .skip-link:focus { top:0; }
+
+    /* ─── GRID BACKGROUND ─── */
+    body::before {
+      content:'';
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(0,212,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,.025) 1px, transparent 1px);
+      background-size:60px 60px;
+    }
+
+    /* ─── CANVAS PARTICLES ─── */
+    #particles {
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+    }
+
+    /* ─── LOADER ─── */
+    #loader {
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      background:var(--navy);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:20px;
+      transition:opacity .6s ease;
+    }
+    #loader.hidden { opacity:0; pointer-events:none; }
+
+    .loader-text {
+      font-family:'DM Mono',monospace;
+      color:var(--cyan);
+      font-size:12px;
+      letter-spacing:3px;
+      text-transform:uppercase;
+    }
+    .loader-bar {
+      width:200px;
+      height:2px;
+      background:var(--navy3);
+      position:relative;
+      overflow:hidden;
+    }
+    .loader-bar::after {
+      content:'';
+      position:absolute;
+      left:-100%;
+      top:0;
+      height:100%;
+      width:60%;
+      background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+      animation:loader-scan .9s ease-in-out forwards;
+    }
+    @keyframes loader-scan { to { left:200%; } }
+
+    /* ─── NAV ─── */
+    nav {
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      z-index:1000;
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      background:rgba(6,13,26,.88);
+      border-bottom:1px solid var(--border);
+      padding:0 5%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      height:62px;
+      transition:box-shadow var(--transition);
+    }
+    nav.scrolled { box-shadow:0 0 40px rgba(0,212,255,.06); }
+
+    .nav-logo {
+      font-family:'Syne',sans-serif;
+      font-size:18px;
+      font-weight:800;
+      color:#fff;
+      letter-spacing:-.5px;
+      text-decoration:none;
+    }
+    .nav-logo span { color:var(--cyan); }
+
+    .nav-links {
+      display:flex;
+      gap:28px;
+      list-style:none;
+    }
+    .nav-links a {
+      font-family:'DM Mono',monospace;
+      font-size:12px;
+      letter-spacing:1.5px;
+      color:var(--text-dim);
+      text-decoration:none;
+      text-transform:uppercase;
+      transition:color var(--transition);
+      position:relative;
+      padding-bottom:2px;
+    }
+    .nav-links a::after {
+      content:'';
+      position:absolute;
+      bottom:-4px;
+      left:0;
+      width:0;
+      height:1px;
+      background:var(--cyan);
+      transition:width .3s ease;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color:var(--cyan); }
+    .nav-links a:hover::after,
+    .nav-links a.active::after { width:100%; }
+    .nav-links a:focus-visible {
+      outline:2px solid var(--cyan);
+      outline-offset:4px;
+      border-radius:2px;
+    }
+
+    /* hamburger */
+    .hamburger {
+      display:none;
+      flex-direction:column;
+      gap:5px;
+      cursor:pointer;
+      background:none;
+      border:none;
+      padding:4px;
+    }
+    .hamburger span {
+      display:block;
+      width:24px;
+      height:2px;
+      background:var(--cyan);
+      border-radius:1px;
+      transition:all .3s ease;
+      pointer-events:none;
+    }
+    .hamburger[aria-expanded="true"] span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .hamburger[aria-expanded="true"] span:nth-child(2) { opacity:0; }
+    .hamburger[aria-expanded="true"] span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+    /* ─── SECTIONS ─── */
+    section {
+      position:relative;
+      z-index:1;
+      padding:clamp(70px,8vw,110px) 5%;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      position:relative;
+      z-index:1;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      padding-top:62px;
+    }
+    .hero-inner {
+      max-width:1200px;
+      margin:0 auto;
+      padding:clamp(40px,6vw,80px) 5%;
+      width:100%;
+    }
+
+    .hero-badge {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-family:'DM Mono',monospace;
+      font-size:11px;
+      letter-spacing:2px;
+      color:var(--cyan);
+      text-transform:uppercase;
+      border:1px solid var(--border);
+      padding:6px 14px;
+      border-radius:var(--radius);
+      margin-bottom:28px;
+      background:var(--cyan-dim);
+    }
+    .hero-badge::before {
+      content:'';
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 8px var(--green);
+      flex-shrink:0;
+      animation:pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%,100% { opacity:1; box-shadow:0 0 8px var(--green); }
+      50%      { opacity:.5; box-shadow:0 0 3px var(--green); }
+    }
+
+    .hero-name {
+      font-family:'Syne',sans-serif;
+      font-size:clamp(48px,8.5vw,100px);
+      font-weight:800;
+      line-height:.95;
+      letter-spacing:-2px;
+      color:#fff;
+      margin-bottom:20px;
+    }
+    .hero-name .accent { color:var(--cyan); }
+
+    .hero-typing {
+      font-family:'DM Mono',monospace;
+      font-size:clamp(14px,2vw,19px);
+      color:var(--cyan);
+      min-height:30px;
+      margin-bottom:20px;
+      display:flex;
+      align-items:center;
+      gap:2px;
+    }
+    /* Block cursor — more terminal-authentic */
+    .cursor {
+      display:inline-block;
+      width:.55em;
+      height:1.1em;
+      background:var(--cyan);
+      vertical-align:text-bottom;
+      animation:block-blink 1s step-end infinite;
+      border-radius:1px;
+    }
+    @keyframes block-blink { 50% { opacity:0; } }
+
+    .hero-tagline {
+      font-size:clamp(14px,1.6vw,16px);
+      color:var(--text-mid);
+      max-width:560px;
+      line-height:1.85;
+      margin-bottom:44px;
+    }
+    .hero-cta { display:flex; gap:14px; flex-wrap:wrap; }
+
+    .btn {
+      font-family:'DM Mono',monospace;
+      font-size:12px;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      padding:13px 28px;
+      border-radius:var(--radius);
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      transition:all var(--transition);
+      cursor:pointer;
+      border:none;
+      -webkit-font-smoothing:antialiased;
+    }
+    .btn:focus-visible {
+      outline:2px solid var(--cyan);
+      outline-offset:3px;
+    }
+    .btn-primary {
+      background:var(--cyan);
+      color:var(--navy);
+      font-weight:700;
+    }
+    .btn-primary:hover {
+      background:#1adeff;
+      box-shadow:0 0 28px var(--cyan-glow),0 4px 20px rgba(0,212,255,.2);
+      transform:translateY(-2px);
+    }
+    .btn-secondary {
+      background:transparent;
+      color:var(--cyan);
+      border:1px solid rgba(0,212,255,.5);
+    }
+    .btn-secondary:hover {
+      background:var(--cyan-dim);
+      border-color:var(--cyan);
+      box-shadow:0 0 20px var(--cyan-glow);
+      transform:translateY(-2px);
+    }
+
+
+    .hero-contacts {
+      display:flex;
+      flex-wrap:wrap;
+      gap:20px;
+      margin-top:52px;
+    }
+    .hero-contact-item {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-family:'DM Mono',monospace;
+      font-size:12px;
+      color:var(--text-dim);
+      text-decoration:none;
+      transition:color var(--transition);
+    }
+    .hero-contact-item:hover,
+    .hero-contact-item:focus-visible { color:var(--cyan); }
+    .hero-contact-item:focus-visible { outline:2px solid var(--cyan); outline-offset:4px; border-radius:2px; }
+    .hero-contact-item i { color:var(--cyan); font-size:13px; }
+
+    /* ─── SECTION HEADER ─── */
+    .section-label {
+      font-family:'DM Mono',monospace;
+      font-size:11px;
+      letter-spacing:3px;
+      text-transform:uppercase;
+      color:var(--cyan);
+      margin-bottom:10px;
+      opacity:.85;
+    }
+    .section-title {
+      font-family:'Syne',sans-serif;
+      font-size:clamp(30px,5vw,52px);
+      font-weight:800;
+      letter-spacing:-1px;
+      color:#fff;
+      margin-bottom:14px;
+      line-height:1.1;
+    }
+    .section-rule {
+      width:44px;
+      height:2px;
+      background:linear-gradient(90deg,var(--cyan),var(--purple));
+      margin-bottom:56px;
+      border:none;
+    }
+
+    /* ─── ABOUT ─── */
+    .about-grid {
+      display:grid;
+      grid-template-columns:1.1fr 0.9fr;
+      gap:56px;
+      align-items:center;
+    }
+    .about-text p {
+      color:var(--text-mid);
+      font-size:clamp(14px,1.5vw,16px);
+      line-height:1.9;
+      margin-bottom:18px;
+    }
+    .about-text p strong { color:var(--text); font-weight:500; }
+    .about-stats {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .stat-card {
+      background:var(--glass);
+      border:1px solid var(--border);
+      padding:22px 18px;
+      border-radius:var(--radius);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      position:relative;
+      overflow:hidden;
+      transition:border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .stat-card::before {
+      content:'';
+      position:absolute;
+      top:0; left:0;
+      width:100%; height:2px;
+      background:linear-gradient(90deg,var(--cyan),var(--purple));
+    }
+    .stat-card:hover {
+      border-color:var(--border-hover);
+      transform:translateY(-4px);
+      box-shadow:0 8px 30px rgba(0,0,0,.3);
+    }
+    .stat-num {
+      font-family:'Syne',sans-serif;
+      font-size:clamp(28px,3vw,36px);
+      font-weight:800;
+      color:var(--cyan);
+      line-height:1;
+      margin-bottom:6px;
+    }
+    .stat-label { font-size:12px; color:var(--text-dim); letter-spacing:.3px; }
+
+    /* ─── EXPERIENCE ─── */
+    .timeline {
+      position:relative;
+      padding-left:32px;
+    }
+    .timeline::before {
+      content:'';
+      position:absolute;
+      left:0; top:8px; bottom:0;
+      width:1px;
+      background:linear-gradient(180deg,var(--cyan),transparent);
+    }
+
+    .timeline-item {
+      position:relative;
+      margin-bottom:48px;
+      opacity:0;
+      transform:translateX(-18px);
+      transition:opacity .5s ease, transform .5s ease;
+    }
+    .timeline-item.visible { opacity:1; transform:translateX(0); }
+
+    .timeline-dot {
+      position:absolute;
+      left:-38px; top:8px;
+      width:12px; height:12px;
+      border-radius:50%;
+      border:2px solid var(--cyan);
+      background:var(--navy);
+      box-shadow:0 0 10px var(--cyan-glow);
+    }
+
+    .timeline-card {
+      background:var(--glass);
+      border:1px solid var(--border);
+      padding:26px 30px;
+      border-radius:var(--radius);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      transition:border-color var(--transition), box-shadow var(--transition);
+    }
+    .timeline-card:hover {
+      border-color:var(--border-hover);
+      box-shadow:0 4px 24px rgba(0,0,0,.25);
+    }
+
+    .timeline-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:6px;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .timeline-role {
+      font-family:'Syne',sans-serif;
+      font-size:clamp(16px,2vw,18px);
+      font-weight:700;
+      color:#fff;
+    }
+    .timeline-date {
+      font-family:'DM Mono',monospace;
+      font-size:11px;
+      letter-spacing:.8px;
+      color:var(--cyan);
+      background:var(--cyan-dim);
+      padding:4px 11px;
+      border-radius:var(--radius);
+      white-space:nowrap;
+      border:1px solid rgba(0,212,255,.18);
+    }
+    .timeline-company {
+      font-family:'DM Mono',monospace;
+      font-size:12px;
+      color:var(--text-dim);
+      margin-bottom:16px;
+      letter-spacing:.5px;
+    }
+    .timeline-list { list-style:none; }
+    .timeline-list li {
+      padding:4px 0 4px 18px;
+      position:relative;
+      color:var(--text-mid);
+      font-size:14px;
+      line-height:1.65;
+    }
+    .timeline-list li::before {
+      content:'▸';
+      position:absolute;
+      left:0; top:5px;
+      color:var(--cyan);
+      font-size:10px;
+    }
+
+    /* ─── SKILLS ─── */
+    .skills-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+      gap:20px;
+    }
+    .skill-category {
+      background:var(--glass);
+      border:1px solid var(--border);
+      padding:26px;
+      border-radius:var(--radius);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      opacity:0;
+      transform:translateY(18px);
+      transition:opacity .4s ease, transform .4s ease, border-color var(--transition), box-shadow var(--transition);
+    }
+    .skill-category.visible { opacity:1; transform:translateY(0); }
+    .skill-category:hover {
+      border-color:var(--border-hover);
+      box-shadow:0 4px 24px rgba(0,0,0,.25);
+    }
+    .skill-cat-title {
+      font-family:'Syne',sans-serif;
+      font-size:13px;
+      font-weight:700;
+      color:var(--cyan);
+      margin-bottom:18px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .skill-cat-title i { font-size:15px; opacity:.85; }
+
+    .skill-tag {
+      display:inline-block;
+      font-family:'DM Mono',monospace;
+      font-size:11px;
+      padding:5px 11px;
+      border-radius:var(--radius);
+      margin:3px 3px 3px 0;
+      background:var(--navy3);
+      border:1px solid var(--border);
+      color:var(--text-mid);
+      letter-spacing:.3px;
+      transition:all var(--transition);
+    }
+    .skill-tag:hover {
+      border-color:var(--cyan);
+      color:var(--cyan);
+      background:var(--cyan-dim);
+    }
+
+    /* ─── PROJECTS ─── */
+    .projects-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:24px;
+    }
+    .project-card {
+      background:var(--glass);
+      border:1px solid var(--border);
+      padding:34px;
+      border-radius:var(--radius);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      position:relative;
+      overflow:hidden;
+      opacity:0;
+      transform:translateY(18px);
+      transition:opacity .5s ease, transform .5s ease, border-color var(--transition), box-shadow var(--transition);
+    }
+    .project-card.visible { opacity:1; transform:translateY(0); }
+    .project-card::after {
+      content:'';
+      position:absolute;
+      inset:0;
+      background:radial-gradient(circle at top left, var(--cyan-soft), transparent 65%);
+      opacity:0;
+      transition:opacity .4s ease;
+      pointer-events:none;
+    }
+    .project-card:hover {
+      border-color:rgba(0,212,255,.35);
+      transform:translateY(-6px);
+      box-shadow:0 12px 40px rgba(0,0,0,.3);
+    }
+    .project-card:hover::after { opacity:1; }
+
+    .project-icon {
+      font-size:26px;
+      color:var(--cyan);
+      margin-bottom:18px;
+    }
+    .project-title {
+      font-family:'Syne',sans-serif;
+      font-size:clamp(17px,2vw,20px);
+      font-weight:700;
+      color:#fff;
+      margin-bottom:12px;
+      line-height:1.3;
+    }
+    .project-desc {
+      color:var(--text-mid);
+      font-size:14px;
+      line-height:1.8;
+      margin-bottom:22px;
+    }
+    .project-link {
+      font-family:'DM Mono',monospace;
+      font-size:12px;
+      letter-spacing:.8px;
+      color:var(--cyan);
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-bottom:1px solid transparent;
+      transition:border-color var(--transition);
+      padding-bottom:1px;
+    }
+    .project-link:hover { border-color:var(--cyan); }
+    .project-link:focus-visible { outline:2px solid var(--cyan); outline-offset:4px; border-radius:2px; }
+
+    /* ─── ACHIEVEMENTS ─── */
+    .achievements-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+      gap:18px;
+    }
+    .achievement-card {
+      background:var(--glass);
+      border:1px solid var(--border);
+      padding:30px 22px;
+      border-radius:var(--radius);
+      text-align:center;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      position:relative;
+      overflow:hidden;
+      opacity:0;
+      transform:scale(.92);
+      transition:opacity .4s ease, transform .4s ease, border-color var(--transition), box-shadow var(--transition);
+    }
+    .achievement-card.visible { opacity:1; transform:scale(1); }
+    .achievement-card:hover {
+      border-color:var(--border-hover);
+      transform:translateY(-6px);
+      box-shadow:0 8px 30px rgba(0,0,0,.3);
+    }
+    .achievement-card::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0;
+      height:2px;
+      background:linear-gradient(90deg,var(--purple),var(--cyan));
+    }
+    .achievement-num {
+      font-family:'Syne',sans-serif;
+      font-size:clamp(36px,4vw,44px);
+      font-weight:800;
+      color:var(--cyan);
+      line-height:1;
+      margin-bottom:10px;
+    }
+    .achievement-label {
+      font-size:13px;
+      color:var(--text-dim);
+      line-height:1.5;
+    }
+
+    /* ─── CERTIFICATIONS ─── */
+    .certs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+      gap:18px;
+    }
+    .cert-card {
+      background:var(--glass);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      overflow:hidden;
+      opacity:0;
+      transform:translateY(14px);
+      transition:opacity .4s ease, transform .4s ease, border-color var(--transition), box-shadow var(--transition);
+      display:flex;
+      flex-direction:column;
+    }
+    .cert-card.visible { opacity:1; transform:translateY(0); }
+    .cert-card.has-image { cursor:pointer; }
+    .cert-card.has-image:hover {
+      border-color:var(--border-hover);
+      box-shadow:0 0 24px rgba(0,212,255,.18);
+      transform:translateY(-5px);
+    }
+    .cert-card:not(.has-image):hover {
+      border-color:var(--border-hover);
+      transform:translateY(-4px);
+    }
+
+    .cert-thumb-wrap {
+      width:100%; height:155px;
+      overflow:hidden;
+      position:relative;
+      background:var(--navy3);
+      flex-shrink:0;
+    }
+    .cert-thumb-wrap img {
+      width:100%; height:100%;
+      object-fit:cover;
+      display:block;
+      transition:transform .4s ease;
+    }
+    .cert-card.has-image:hover .cert-thumb-wrap img { transform:scale(1.06); }
+
+    .cert-overlay {
+      position:absolute;
+      inset:0;
+      background:rgba(0,212,255,.1);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      opacity:0;
+      transition:opacity .3s ease;
+    }
+    .cert-card.has-image:hover .cert-overlay { opacity:1; }
+    .cert-overlay i { font-size:30px; color:#fff; text-shadow:0 0 14px var(--cyan); }
+
+    .cert-no-img {
+      width:100%; height:105px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--navy3);
+      font-size:34px;
+      color:var(--cyan);
+      opacity:.3;
+    }
+    .cert-info {
+      padding:16px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      flex:1;
+    }
+    .cert-name { font-size:13px; font-weight:600; color:#fff; line-height:1.4; }
+    .cert-issuer {
+      font-family:'DM Mono',monospace;
+      font-size:11px;
+      color:var(--cyan);
+      letter-spacing:.4px;
+    }
+    .cert-year {
+      font-family:'DM Mono',monospace;
+      font-size:11px;
+      color:var(--text-dim);
+    }
+    .cert-badge {
+      margin-top:7px;
+      align-self:flex-start;
+      font-family:'DM Mono',monospace;
+      font-size:10px;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      padding:3px 9px;
+      border-radius:var(--radius);
+      background:var(--cyan-dim);
+      color:var(--cyan);
+      border:1px solid rgba(0,212,255,.18);
+    }
+
+    /* ─── LIGHTBOX ─── */
+    #lightbox {
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:10000;
+      background:rgba(4,9,18,.96);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    #lightbox.open {
+      display:flex;
+      animation:lb-fade-in .22s ease forwards;
+    }
+    @keyframes lb-fade-in { from { opacity:0; } to { opacity:1; } }
+
+    .lb-close {
+      position:absolute;
+      top:20px; right:24px;
+      width:44px; height:44px;
+      border-radius:50%;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      color:var(--text-mid);
+      font-size:17px;
+      transition:all var(--transition);
+      z-index:2;
+    }
+    .lb-close:hover { background:var(--cyan-dim); color:var(--cyan); border-color:var(--cyan); }
+    .lb-close:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
+
+    .lb-inner {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:14px;
+      max-width:900px;
+      width:100%;
+      animation:lb-slide-up .28s ease forwards;
+    }
+    @keyframes lb-slide-up {
+      from { transform:translateY(18px); opacity:0; }
+      to   { transform:translateY(0);    opacity:1; }
+    }
+    #lb-img {
+      max-width:100%; max-height:72vh;
+      border-radius:6px;
+      border:1px solid var(--border);
+      box-shadow:0 0 60px rgba(0,212,255,.18);
+      display:block;
+    }
+    #lb-caption {
+      font-family:'Syne',sans-serif;
+      font-size:17px;
+      font-weight:700;
+      color:#fff;
+      text-align:center;
+    }
+    #lb-meta {
+      font-family:'DM Mono',monospace;
+      font-size:12px;
+      color:var(--text-dim);
+      letter-spacing:1px;
+      text-align:center;
+    }
+
+    /* ─── EDUCATION ─── */
+    .edu-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:22px;
+    }
+    .edu-card {
+      background:var(--glass);
+      border:1px solid var(--border);
+      padding:30px;
+      border-radius:var(--radius);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      position:relative;
+      overflow:hidden;
+      transition:border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .edu-card::before {
+      content:'';
+      position:absolute;
+      top:0; left:0;
+      height:100%; width:3px;
+      background:linear-gradient(180deg,var(--cyan),var(--purple));
+    }
+    .edu-card:hover {
+      border-color:var(--border-hover);
+      transform:translateY(-4px);
+      box-shadow:0 8px 28px rgba(0,0,0,.25);
+    }
+    .edu-degree {
+      font-family:'Syne',sans-serif;
+      font-size:clamp(16px,2vw,18px);
+      font-weight:700;
+      color:#fff;
+      margin-bottom:8px;
+    }
+    .edu-school { color:var(--cyan); font-size:14px; margin-bottom:4px; }
+    .edu-location { color:var(--text-dim); font-size:13px; }
+
+    /* ─── CONTACT ─── */
+    .contact-info { display:flex; flex-direction:column; gap:14px; max-width:520px; }
+    .contact-link {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      text-decoration:none;
+      color:var(--text);
+      padding:16px 20px;
+      background:var(--glass);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      transition:all var(--transition);
+      font-size:14px;
+    }
+    .contact-link:hover {
+      border-color:var(--cyan);
+      color:var(--cyan);
+      transform:translateX(6px);
+      box-shadow:0 4px 20px rgba(0,0,0,.2);
+    }
+    .contact-link:focus-visible {
+      outline:2px solid var(--cyan);
+      outline-offset:3px;
+    }
+    .contact-link i {
+      font-size:17px;
+      color:var(--cyan);
+      width:22px;
+      text-align:center;
+      flex-shrink:0;
+    }
+
+
+
+    /* ─── FOOTER ─── */
+    footer {
+      position:relative;
+      z-index:1;
+      border-top:1px solid var(--border);
+      padding:30px 5%;
+      text-align:center;
+      font-family:'DM Mono',monospace;
+      font-size:12px;
+      color:var(--text-dim);
+      letter-spacing:.8px;
+    }
+    footer span { color:var(--cyan); }
+
+
+
+    /* ─── SCROLL TOP ─── */
+    #scroll-top {
+      position:fixed;
+      bottom:30px; right:30px;
+      z-index:999;
+      width:44px; height:44px;
+      background:var(--navy3);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      color:var(--cyan);
+      font-size:15px;
+      opacity:0;
+      pointer-events:none;
+      transition:all var(--transition);
+    }
+    #scroll-top.visible { opacity:1; pointer-events:all; }
+    #scroll-top:hover { background:var(--cyan-dim); border-color:var(--cyan); }
+    #scroll-top:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity:0;
+      transform:translateY(22px);
+      transition:opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width:1024px) {
+      .about-grid { grid-template-columns:1fr; gap:40px; }
+    }
+    @media (max-width:900px) {
+      .edu-grid { grid-template-columns:1fr; gap:24px; }
+      .projects-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width:700px) {
+      .nav-links {
+        display:none;
+        position:fixed;
+        inset:62px 0 0 0;
+        background:rgba(6,13,26,.97);
+        backdrop-filter:blur(20px);
+        flex-direction:column;
+        padding:36px 5%;
+        gap:22px;
+        border-top:1px solid var(--border);
+        overflow-y:auto;
+      }
+      .nav-links.open { display:flex; }
+      .hamburger { display:flex; }
+      section { padding:60px 5%; }
+    }
+    @media (max-width:480px) {
+      .achievements-grid { grid-template-columns:1fr 1fr; }
+      .about-stats { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width:360px) {
+      .achievements-grid { grid-template-columns:1fr; }
+      .about-stats       { grid-template-columns:1fr; }
+    }
+
+    /* ─── 4K / ULTRA-WIDE ─── */
+    @media (min-width:2000px) {
+      section { max-width:1400px; }
+      .hero-inner { max-width:1400px; }
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- LOADER -->
-    <div id="loader">
-        <div class="loader-text">INITIALIZING SECURITY PORTFOLIO...</div>
-        <div class="loader-bar"></div>
+  <!-- ACCESSIBILITY: skip-to-content -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- LOADER -->
+  <div id="loader" role="status" aria-label="Loading portfolio">
+    <div class="loader-text" aria-hidden="true">INITIALIZING SECURITY PORTFOLIO...</div>
+    <div class="loader-bar" aria-hidden="true"></div>
+  </div>
+
+  <!-- PARTICLES (decorative) -->
+  <canvas id="particles" aria-hidden="true"></canvas>
+
+  <!-- ─── NAV ─── -->
+  <nav id="navbar" role="navigation" aria-label="Primary navigation">
+    <a href="#hero" class="nav-logo" aria-label="Priyam Patel — home">P<span>.</span>PATEL</a>
+
+    <ul class="nav-links" id="navLinks" role="list">
+      <li><a href="#about"          aria-label="About section">About</a></li>
+      <li><a href="#experience"     aria-label="Experience section">Experience</a></li>
+      <li><a href="#skills"         aria-label="Skills section">Skills</a></li>
+      <li><a href="#projects"       aria-label="Projects section">Projects</a></li>
+      <li><a href="#certifications" aria-label="Certifications section">Certs</a></li>
+      <li><a href="#contact"        aria-label="Contact section">Contact</a></li>
+    </ul>
+
+    <button
+      class="hamburger"
+      id="hamburger"
+      aria-controls="navLinks"
+      aria-expanded="false"
+      aria-label="Toggle navigation menu"
+    >
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <div id="hero" role="banner">
+    <div class="hero-inner" id="main-content">
+      <div class="hero-badge" aria-label="Status: Available for opportunities">Available for opportunities</div>
+
+      <h1 class="hero-name">Priyam<br><span class="accent">Patel</span></h1>
+
+      <div class="hero-typing" aria-live="polite" aria-label="Role description">
+        <span id="typed-text"></span><span class="cursor" aria-hidden="true"></span>
+      </div>
+
+      <p class="hero-tagline">
+        Helping organizations detect threats, investigate incidents, and reduce cyber risk through proactive security operations.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary">
+          <i class="fas fa-paper-plane" aria-hidden="true"></i> Contact Me
+        </a>
+        <a href="#about" class="btn btn-secondary">
+          <i class="fas fa-chevron-down" aria-hidden="true"></i> Learn More
+        </a>
+      </div>
+
+      <div class="hero-contacts" role="list" aria-label="Contact links">
+        <a href="mailto:priyampatel9911@gmail.com" class="hero-contact-item" role="listitem"
+           aria-label="Email Priyam Patel">
+          <i class="fas fa-envelope" aria-hidden="true"></i>priyampatel9911@gmail.com
+        </a>
+        <a href="tel:+919558709791" class="hero-contact-item" role="listitem"
+           aria-label="Call +91 9558709791">
+          <i class="fas fa-phone" aria-hidden="true"></i>+91-9558709791
+        </a>
+        <a href="https://linkedin.com/in/priyampat3l" target="_blank" rel="noopener noreferrer"
+           class="hero-contact-item" role="listitem" aria-label="LinkedIn profile (opens in new tab)">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>LinkedIn
+        </a>
+        <a href="https://github.com/priyam001" target="_blank" rel="noopener noreferrer"
+           class="hero-contact-item" role="listitem" aria-label="GitHub profile (opens in new tab)">
+          <i class="fab fa-github" aria-hidden="true"></i>GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ABOUT ─── -->
+  <section id="about" aria-labelledby="about-title">
+    <h2 class="section-title" id="about-title">Who I Am</h2>
+    <hr class="section-rule" aria-hidden="true">
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <p>SOC Analyst with <strong>3+ years of hands-on experience</strong> helping organizations detect threats, investigate incidents, and reduce response time across complex enterprise environments.</p>
+        <p>Specialized in <strong>Microsoft Sentinel, CrowdStrike Falcon, Digital Forensics &amp; Incident Response (DFIR), Threat Hunting</strong>, and <strong>CyberArk PAM</strong>. I work at the intersection of detection engineering and security operations, turning noise into intelligence.</p>
+        <p>From tuning SIEM rules to hunting advanced threats using MITRE ATT&amp;CK, I bring a structured and methodology-driven approach to every investigation.</p>
+      </div>
+      <div class="about-stats" role="list" aria-label="Key statistics">
+        <div class="stat-card reveal" role="listitem">
+          <div class="stat-num" data-target="30" aria-label="30 percent">0</div>
+          <div class="stat-label">% Reduction in MTTR</div>
+        </div>
+        <div class="stat-card reveal" role="listitem">
+          <div class="stat-num" data-target="95" aria-label="95 percent">0</div>
+          <div class="stat-label">% SLA Compliance</div>
+        </div>
+        <div class="stat-card reveal" role="listitem">
+          <div class="stat-num" data-target="65" aria-label="65 plus">0</div>
+          <div class="stat-label">+ Enterprise Apps Protected</div>
+        </div>
+        <div class="stat-card reveal" role="listitem">
+          <div class="stat-num" data-target="4000" aria-label="4000 plus">0</div>
+          <div class="stat-label">+ Assets Assessed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EXPERIENCE ─── -->
+  <section id="experience" aria-labelledby="experience-title">
+    <h2 class="section-title" id="experience-title">Career Timeline</h2>
+    <hr class="section-rule" aria-hidden="true">
+
+    <div class="timeline" role="list" aria-label="Work experience timeline">
+
+      <article class="timeline-item" role="listitem">
+        <div class="timeline-dot" aria-hidden="true"></div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-role">Security Analyst</span>
+            <span class="timeline-date"><time>Aug 2023 — Mar 2026</time></span>
+          </div>
+          <div class="timeline-company">Terralogic</div>
+          <ul class="timeline-list">
+            <li>Managed CyberArk PAM components in enterprise environments, supporting privileged access management operations including CPM password rotation and SSH key scanning</li>
+            <li>Performed advanced threat hunting using Microsoft Sentinel, Splunk, CrowdStrike, OTX, MISP, and VirusTotal</li>
+            <li>Investigated phishing, malware, suspicious logins, and endpoint compromises end-to-end</li>
+            <li>Administered security controls for 65+ internet-facing enterprise applications</li>
+            <li>Conducted MITRE ATT&amp;CK-aligned threat hunting campaigns and produced vulnerability reports for 4,000+ assets</li>
+            <li>Maintained 95%+ SLA compliance and developed incident response playbooks</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="timeline-item" role="listitem">
+        <div class="timeline-dot" aria-hidden="true"></div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-role">SOC Analyst Intern</span>
+            <span class="timeline-date"><time>Mar 2023 — Oct 2023</time></span>
+          </div>
+          <div class="timeline-company">Terralogic</div>
+          <ul class="timeline-list">
+            <li>Investigated SIEM and EDR alerts, triaging and escalating incidents with structured documentation</li>
+            <li>Assisted firewall, VPN, and access policy operations to enforce network security posture</li>
+            <li>Conducted vulnerability assessments using Nmap, Nessus, Burp Suite, and Metasploit</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="timeline-item" role="listitem">
+        <div class="timeline-dot" aria-hidden="true"></div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-role">Technical Content Writer</span>
+            <span class="timeline-date"><time>Apr 2022 — Apr 2023</time></span>
+          </div>
+          <div class="timeline-company">GeeksforGeeks</div>
+          <ul class="timeline-list">
+            <li>Published 80+ cybersecurity articles covering topics from network security to malware analysis</li>
+            <li>Reached over 200K readers, establishing a strong presence in the security knowledge community</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="timeline-item" role="listitem">
+        <div class="timeline-dot" aria-hidden="true"></div>
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <span class="timeline-role">VAPT Intern</span>
+            <span class="timeline-date"><time>Oct 2021 — Dec 2021</time></span>
+          </div>
+          <div class="timeline-company">Virtually Testing Foundation</div>
+          <ul class="timeline-list">
+            <li>Performed web application security testing against OWASP Top 10 vulnerabilities</li>
+            <li>Used tools including Nmap, Nessus, Burp Suite, Nikto, SQLMap, and Hydra</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ─── SKILLS ─── -->
+  <section id="skills" aria-labelledby="skills-title">
+    <h2 class="section-title" id="skills-title">Technical Arsenal</h2>
+    <hr class="section-rule" aria-hidden="true">
+    <div class="skills-grid">
+
+      <div class="skill-category" role="region" aria-label="Security Operations skills">
+        <div class="skill-cat-title"><i class="fas fa-shield-halved" aria-hidden="true"></i> Security Operations</div>
+        <span class="skill-tag">Incident Response</span>
+        <span class="skill-tag">Threat Hunting</span>
+        <span class="skill-tag">Malware Analysis</span>
+        <span class="skill-tag">Log Analysis</span>
+        <span class="skill-tag">Alert Triage</span>
+        <span class="skill-tag">Phishing Investigation</span>
+        <span class="skill-tag">Digital Forensics</span>
+      </div>
+
+      <div class="skill-category" role="region" aria-label="SIEM platforms skills">
+        <div class="skill-cat-title"><i class="fas fa-chart-bar" aria-hidden="true"></i> SIEM Platforms</div>
+        <span class="skill-tag">Microsoft Sentinel</span>
+        <span class="skill-tag">Splunk</span>
+        <span class="skill-tag">QRadar</span>
+        <span class="skill-tag">Wazuh</span>
+      </div>
+
+      <div class="skill-category" role="region" aria-label="EDR XDR skills">
+        <div class="skill-cat-title"><i class="fas fa-laptop" aria-hidden="true"></i> EDR / XDR</div>
+        <span class="skill-tag">CrowdStrike Falcon</span>
+        <span class="skill-tag">FortiEDR</span>
+        <span class="skill-tag">Stellar Cyber</span>
+      </div>
+
+      <div class="skill-category" role="region" aria-label="Threat Intelligence skills">
+        <div class="skill-cat-title"><i class="fas fa-crosshairs" aria-hidden="true"></i> Threat Intelligence</div>
+        <span class="skill-tag">MITRE ATT&amp;CK</span>
+        <span class="skill-tag">MISP</span>
+        <span class="skill-tag">VirusTotal</span>
+        <span class="skill-tag">AlienVault OTX</span>
+        <span class="skill-tag">Hybrid Analysis</span>
+        <span class="skill-tag">Shodan</span>
+        <span class="skill-tag">Censys</span>
+      </div>
+
+      <div class="skill-category" role="region" aria-label="Network Security skills">
+        <div class="skill-cat-title"><i class="fas fa-network-wired" aria-hidden="true"></i> Network Security</div>
+        <span class="skill-tag">FortiGate Firewall</span>
+        <span class="skill-tag">Vyatta Firewall</span>
+        <span class="skill-tag">NSX</span>
+        <span class="skill-tag">NetScaler</span>
+        <span class="skill-tag">Radware WAF</span>
+      </div>
+
+      <div class="skill-category" role="region" aria-label="Identity and Access skills">
+        <div class="skill-cat-title"><i class="fas fa-id-badge" aria-hidden="true"></i> Identity &amp; Access</div>
+        <span class="skill-tag">CyberArk PAM</span>
+        <span class="skill-tag">Zscaler ZIA</span>
+        <span class="skill-tag">ZPA</span>
+        <span class="skill-tag">G Suite</span>
+      </div>
+
+      <div class="skill-category" role="region" aria-label="Security Testing skills">
+        <div class="skill-cat-title"><i class="fas fa-bug" aria-hidden="true"></i> Security Testing</div>
+        <span class="skill-tag">Nmap</span>
+        <span class="skill-tag">Nessus</span>
+        <span class="skill-tag">Burp Suite</span>
+        <span class="skill-tag">Metasploit</span>
+        <span class="skill-tag">Nikto</span>
+        <span class="skill-tag">SQLMap</span>
+        <span class="skill-tag">Hydra</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── PROJECTS ─── -->
+  <section id="projects" aria-labelledby="projects-title">
+    <h2 class="section-title" id="projects-title">Featured Work</h2>
+    <hr class="section-rule" aria-hidden="true">
+    <div class="projects-grid">
+
+      <article class="project-card">
+        <div class="project-icon" aria-hidden="true"><i class="fas fa-fire-flame-curved"></i></div>
+        <h3 class="project-title">Firewall CIS Benchmark Compliance Checker</h3>
+        <p class="project-desc">Developed a tool to assess FortiGate firewall configurations against CIS Benchmarks, automatically identifying compliance gaps and generating actionable remediation reports.</p>
+        <a href="https://github.com/priyam001/Fortigate_CIS_check" target="_blank" rel="noopener noreferrer"
+           class="project-link" aria-label="View Firewall CIS Benchmark Compliance Checker on GitHub (opens in new tab)">
+          <i class="fab fa-github" aria-hidden="true"></i> View on GitHub
+          <i class="fas fa-arrow-right" style="font-size:10px" aria-hidden="true"></i>
+        </a>
+      </article>
+
+      <article class="project-card">
+        <div class="project-icon" aria-hidden="true"><i class="fas fa-dna"></i></div>
+        <h3 class="project-title">Malware Detection Using YARA Rules in SIEM</h3>
+        <p class="project-desc">Research project focused on integrating YARA-based malware detection with SIEM platforms for enhanced threat detection capability, published in an international academic journal.</p>
+        <a href="https://www.igi-global.com/chapter/malware-detection-using-yara-rules-in-siem/331310"
+           target="_blank" rel="noopener noreferrer"
+           class="project-link" aria-label="Read YARA Rules in SIEM publication (opens in new tab)">
+          <i class="fas fa-book-open" aria-hidden="true"></i> Read Publication
+          <i class="fas fa-arrow-right" style="font-size:10px" aria-hidden="true"></i>
+        </a>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ─── ACHIEVEMENTS ─── -->
+  <section id="achievements" aria-labelledby="achievements-title">
+    <h2 class="section-title" id="achievements-title">Impact by Numbers</h2>
+    <hr class="section-rule" aria-hidden="true">
+    <div class="achievements-grid" role="list" aria-label="Achievement statistics">
+
+      <div class="achievement-card" role="listitem">
+        <div class="achievement-num" data-target="30" aria-label="30 percent">0</div>
+        <div class="achievement-label">% Reduction in Mean Time to Respond</div>
+      </div>
+      <div class="achievement-card" role="listitem">
+        <div class="achievement-num" data-target="95" aria-label="95 percent plus">0</div>
+        <div class="achievement-label">%+ SLA Compliance Maintained</div>
+      </div>
+      <div class="achievement-card" role="listitem">
+        <div class="achievement-num" data-target="65" aria-label="65 plus">0</div>
+        <div class="achievement-label">+ Enterprise Applications Protected</div>
+      </div>
+      <div class="achievement-card" role="listitem">
+        <div class="achievement-num" data-target="4000" aria-label="4000 plus">0</div>
+        <div class="achievement-label">+ Assets Vulnerability Assessed</div>
+      </div>
+      <div class="achievement-card" role="listitem">
+        <div class="achievement-num" data-target="80" aria-label="80 plus">0</div>
+        <div class="achievement-label">+ Cybersecurity Articles Published</div>
+      </div>
+      <div class="achievement-card" role="listitem">
+        <div class="achievement-num" data-target="200" aria-label="200 K plus">0</div>
+        <div class="achievement-label">K+ Readers Reached</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── CERTIFICATIONS ─── -->
+  <section id="certifications" aria-labelledby="certs-title">
+    <h2 class="section-title" id="certs-title">Credentials</h2>
+    <hr class="section-rule" aria-hidden="true">
+    <div class="certs-grid" id="certs-grid" role="list" aria-label="Certifications">
+      <!-- Dynamically rendered by JS -->
+    </div>
+  </section>
+
+  <!-- ─── LIGHTBOX ─── -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lb-caption"
+       onclick="closeLightbox()">
+    <button class="lb-close" onclick="closeLightbox()" aria-label="Close certificate preview">
+      <i class="fas fa-times" aria-hidden="true"></i>
+    </button>
+    <div class="lb-inner" onclick="event.stopPropagation()">
+      <img id="lb-img" src="" alt="">
+      <div id="lb-caption"></div>
+      <div id="lb-meta"></div>
+    </div>
+  </div>
+
+  <!-- ─── EDUCATION ─── -->
+  <section id="education" aria-labelledby="education-title">
+    <h2 class="section-title" id="education-title">Academic Background</h2>
+    <hr class="section-rule" aria-hidden="true">
+    <div class="edu-grid reveal">
+      <article class="edu-card">
+        <div class="edu-degree">M.Tech in Cybersecurity</div>
+        <div class="edu-school">Rashtriya Raksha University</div>
+        <div class="edu-location">Gandhinagar, Gujarat</div>
+      </article>
+      <article class="edu-card">
+        <div class="edu-degree">B.E. Information Technology</div>
+        <div class="edu-school">SVMIT (GTU)</div>
+        <div class="edu-location">Bharuch, Gujarat</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ─── -->
+  <section id="contact" aria-labelledby="contact-title">
+    <h2 class="section-title" id="contact-title">Get In Touch</h2>
+    <hr class="section-rule" aria-hidden="true">
+
+    <div class="contact-info reveal" role="list" aria-label="Contact methods">
+      <a href="mailto:priyampatel9911@gmail.com" class="contact-link" role="listitem"
+         aria-label="Send email to priyampatel9911@gmail.com">
+        <i class="fas fa-envelope" aria-hidden="true"></i>
+        <span class="contact-detail">priyampatel9911@gmail.com</span>
+      </a>
+      <a href="tel:+919558709791" class="contact-link" role="listitem"
+         aria-label="Call +91 9558709791">
+        <i class="fas fa-phone" aria-hidden="true"></i>
+        <span class="contact-detail">+91-9558709791</span>
+      </a>
+      <a href="https://linkedin.com/in/priyampat3l" target="_blank" rel="noopener noreferrer"
+         class="contact-link" role="listitem" aria-label="LinkedIn profile (opens in new tab)">
+        <i class="fab fa-linkedin" aria-hidden="true"></i>
+        <span class="contact-detail">linkedin.com/in/priyampat3l</span>
+      </a>
+      <a href="https://github.com/priyam001" target="_blank" rel="noopener noreferrer"
+         class="contact-link" role="listitem" aria-label="GitHub profile (opens in new tab)">
+        <i class="fab fa-github" aria-hidden="true"></i>
+        <span class="contact-detail">github.com/priyam001</span>
+      </a>
     </div>
 
-    <!-- PARTICLES -->
-    <canvas id="particles"></canvas>
+  </section>
 
-    <!-- NAV -->
-    <nav id="navbar">
-        <div class="nav-logo">P<span>.</span>PATEL</div>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="#about">About</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#certifications">Certs</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-        <div class="hamburger" id="hamburger" onclick="toggleMenu()">
-            <span></span><span></span><span></span>
-        </div>
-    </nav>
+  <!-- ─── FOOTER ─── -->
+  <footer role="contentinfo">
+    <p>© 2026 <span>Priyam Patel</span> — SOC Analyst &amp; DFIR Specialist — Built with precision.</p>
+  </footer>
 
-    <!-- HERO -->
-    <div id="hero">
-        <div class="hero-inner">
-            <div class="hero-badge">Available for opportunities</div>
-            <h1 class="hero-name">Priyam<br><span class="accent">Patel</span></h1>
-            <div class="hero-typing"><span id="typed-text"></span><span class="cursor">|</span></div>
-            <p class="hero-tagline">Helping organizations detect threats, investigate incidents, and reduce cyber risk
-                through proactive security operations.</p>
-            <div class="hero-cta">
-                <a href="#contact" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Contact Me</a>
-                <a href="#about" class="btn btn-secondary"><i class="fas fa-chevron-down"></i> Learn More</a>
-            </div>
-            <div class="hero-contacts">
-                <a href="mailto:priyampatel9911@gmail.com" class="hero-contact-item"><i
-                        class="fas fa-envelope"></i>priyampatel9911@gmail.com</a>
-                <a href="tel:+919558709791" class="hero-contact-item"><i class="fas fa-phone"></i>+91-9558709791</a>
-                <a href="https://linkedin.com/in/priyampat3l" target="_blank" class="hero-contact-item"><i
-                        class="fab fa-linkedin"></i>LinkedIn</a>
-                <a href="https://github.com/priyam001" target="_blank" class="hero-contact-item"><i
-                        class="fab fa-github"></i>GitHub</a>
-            </div>
-        </div>
-    </div>
+  <!-- ─── SCROLL TOP ─── -->
+  <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+          aria-label="Scroll back to top">
+    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+  </button>
 
-    <!-- ABOUT -->
-    <section id="about">
-        <div class="section-label">// 01 — About</div>
-        <h2 class="section-title">Who I Am</h2>
-        <div class="section-rule"></div>
-        <div class="about-grid reveal">
-            <div class="about-text">
-                <p>SOC Analyst with <strong>3+ years of hands-on experience</strong> helping organizations detect
-                    threats, investigate incidents, and reduce response time across complex enterprise environments.</p>
-                <p>Specialized in <strong>Microsoft Sentinel, CrowdStrike Falcon, Digital Forensics & Incident Response
-                        (DFIR), Threat Hunting</strong>, and <strong>CyberArk PAM</strong>. I work at the intersection
-                    of detection engineering and security operations, turning noise into intelligence.</p>
-                <p>From tuning SIEM rules to hunting advanced threats using MITRE ATT&CK, I bring a structured and
-                    methodology-driven approach to every investigation.</p>
-            </div>
-            <div class="about-stats">
-                <div class="stat-card reveal">
-                    <div class="stat-num" data-target="30">0</div>
-                    <div class="stat-label">% Reduction in MTTR</div>
-                </div>
-                <div class="stat-card reveal">
-                    <div class="stat-num" data-target="95">0</div>
-                    <div class="stat-label">% SLA Compliance</div>
-                </div>
-                <div class="stat-card reveal">
-                    <div class="stat-num" data-target="65">0</div>
-                    <div class="stat-label">+ Enterprise Apps Protected</div>
-                </div>
-                <div class="stat-card reveal">
-                    <div class="stat-num" data-target="4000">0</div>
-                    <div class="stat-label">+ Assets Assessed</div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- EXPERIENCE -->
-    <section id="experience">
-        <div class="section-label">// 02 — Experience</div>
-        <h2 class="section-title">Career Timeline</h2>
-        <div class="section-rule"></div>
-        <div class="timeline">
+  <!-- ═══════════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════════════════════ -->
+  <script>
+    // ─── UTILS ───────────────────────────────────────────────
+    function debounce(fn, delay) {
+      let id;
+      return function(...args) {
+        clearTimeout(id);
+        id = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-card">
-                    <div class="timeline-header">
-                        <span class="timeline-role">Security Analyst</span>
-                        <span class="timeline-date">Aug 2023 — Mar 2026</span>
-                    </div>
-                    <div class="timeline-company">Terralogic</div>
-                    <ul class="timeline-list">
-                        <li>Managed CyberArk PAM components in enterprise environments, supporting privileged access
-                            management operations including CPM password rotation and SSH key scanning</li>
-                        <li>Performed advanced threat hunting using Microsoft Sentinel, Splunk, CrowdStrike, OTX, MISP,
-                            and VirusTotal</li>
-                        <li>Investigated phishing, malware, suspicious logins, and endpoint compromises end-to-end</li>
-                        <li>Administered security controls for 65+ internet-facing enterprise applications</li>
-                        <li>Conducted MITRE ATT&CK-aligned threat hunting campaigns and produced vulnerability reports
-                            for 4,000+ assets</li>
-                        <li>Maintained 95%+ SLA compliance and developed incident response playbooks</li>
-                    </ul>
-                </div>
-            </div>
+    // ─── LOADER ──────────────────────────────────────────────
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('loader');
+        loader.classList.add('hidden');
+        setTimeout(() => loader.remove(), 700);
+      }, 1400);
+    });
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-card">
-                    <div class="timeline-header">
-                        <span class="timeline-role">SOC Analyst Intern</span>
-                        <span class="timeline-date">Mar 2023 — Oct 2023</span>
-                    </div>
-                    <div class="timeline-company">Terralogic</div>
-                    <ul class="timeline-list">
-                        <li>Investigated SIEM and EDR alerts, triaging and escalating incidents with structured
-                            documentation</li>
-                        <li>Assisted firewall, VPN, and access policy operations to enforce network security posture
-                        </li>
-                        <li>Conducted vulnerability assessments using Nmap, Nessus, Burp Suite, and Metasploit</li>
-                    </ul>
-                </div>
-            </div>
+    // ─── CANVAS PARTICLES ────────────────────────────────────
+    (function initParticles() {
+      const canvas = document.getElementById('particles');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const COUNT = 55;
+      const CONNECT_DIST = 120;
+      let W, H;
+      let particles = [];
+      let raf;
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-card">
-                    <div class="timeline-header">
-                        <span class="timeline-role">Technical Content Writer</span>
-                        <span class="timeline-date">Apr 2022 — Apr 2023</span>
-                    </div>
-                    <div class="timeline-company">GeeksforGeeks</div>
-                    <ul class="timeline-list">
-                        <li>Published 80+ cybersecurity articles covering topics from network security to malware
-                            analysis</li>
-                        <li>Reached over 200K readers, establishing a strong presence in the security knowledge
-                            community</li>
-                    </ul>
-                </div>
-            </div>
+      // Respect reduced-motion
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      if (prefersReduced) { canvas.style.display = 'none'; return; }
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-card">
-                    <div class="timeline-header">
-                        <span class="timeline-role">VAPT Intern</span>
-                        <span class="timeline-date">Oct 2021 — Dec 2021</span>
-                    </div>
-                    <div class="timeline-company">Virtually Testing Foundation</div>
-                    <ul class="timeline-list">
-                        <li>Performed web application security testing against OWASP Top 10 vulnerabilities</li>
-                        <li>Used tools including Nmap, Nessus, Burp Suite, Nikto, SQLMap, and Hydra</li>
-                    </ul>
-                </div>
-            </div>
+      function setSize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+      setSize();
 
-        </div>
-    </section>
+      // Debounced resize — prevents thrash on continuous resize events
+      window.addEventListener('resize', debounce(setSize, 150));
 
-    <!-- SKILLS -->
-    <section id="skills">
-        <div class="section-label">// 03 — Skills</div>
-        <h2 class="section-title">Technical Arsenal</h2>
-        <div class="section-rule"></div>
-        <div class="skills-grid">
-            <div class="skill-category">
-                <div class="skill-cat-title"><i class="fas fa-shield-halved"></i> Security Operations</div>
-                <span class="skill-tag">Incident Response</span>
-                <span class="skill-tag">Threat Hunting</span>
-                <span class="skill-tag">Malware Analysis</span>
-                <span class="skill-tag">Log Analysis</span>
-                <span class="skill-tag">Alert Triage</span>
-                <span class="skill-tag">Phishing Investigation</span>
-                <span class="skill-tag">Digital Forensics</span>
-            </div>
-            <div class="skill-category">
-                <div class="skill-cat-title"><i class="fas fa-chart-bar"></i> SIEM Platforms</div>
-                <span class="skill-tag">Microsoft Sentinel</span>
-                <span class="skill-tag">Splunk</span>
-                <span class="skill-tag">QRadar</span>
-                <span class="skill-tag">Wazuh</span>
-            </div>
-            <div class="skill-category">
-                <div class="skill-cat-title"><i class="fas fa-laptop"></i> EDR / XDR</div>
-                <span class="skill-tag">CrowdStrike Falcon</span>
-                <span class="skill-tag">FortiEDR</span>
-                <span class="skill-tag">Stellar Cyber</span>
-            </div>
-            <div class="skill-category">
-                <div class="skill-cat-title"><i class="fas fa-crosshairs"></i> Threat Intelligence</div>
-                <span class="skill-tag">MITRE ATT&CK</span>
-                <span class="skill-tag">MISP</span>
-                <span class="skill-tag">VirusTotal</span>
-                <span class="skill-tag">AlienVault OTX</span>
-                <span class="skill-tag">Hybrid Analysis</span>
-                <span class="skill-tag">Shodan</span>
-                <span class="skill-tag">Censys</span>
-            </div>
-            <div class="skill-category">
-                <div class="skill-cat-title"><i class="fas fa-network-wired"></i> Network Security</div>
-                <span class="skill-tag">FortiGate Firewall</span>
-                <span class="skill-tag">Vyatta Firewall</span>
-                <span class="skill-tag">NSX</span>
-                <span class="skill-tag">NetScaler</span>
-                <span class="skill-tag">Radware WAF</span>
-            </div>
-            <div class="skill-category">
-                <div class="skill-cat-title"><i class="fas fa-id-badge"></i> Identity & Access</div>
-                <span class="skill-tag">CyberArk PAM</span>
-                <span class="skill-tag">Zscaler ZIA</span>
-                <span class="skill-tag">ZPA</span>
-                <span class="skill-tag">G Suite</span>
-            </div>
-            <div class="skill-category">
-                <div class="skill-cat-title"><i class="fas fa-bug"></i> Security Testing</div>
-                <span class="skill-tag">Nmap</span>
-                <span class="skill-tag">Nessus</span>
-                <span class="skill-tag">Burp Suite</span>
-                <span class="skill-tag">Metasploit</span>
-                <span class="skill-tag">Nikto</span>
-                <span class="skill-tag">SQLMap</span>
-                <span class="skill-tag">Hydra</span>
-            </div>
-        </div>
-    </section>
+      function makeParticle() {
+        return {
+          x:  Math.random() * W,
+          y:  Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          r:  Math.random() * 1.4 + 0.4,
+          a:  Math.random() * 0.35 + 0.08
+        };
+      }
 
-    <!-- PROJECTS -->
-    <section id="projects">
-        <div class="section-label">// 04 — Projects</div>
-        <h2 class="section-title">Featured Work</h2>
-        <div class="section-rule"></div>
-        <div class="projects-grid">
-            <div class="project-card">
-                <div class="project-icon"><i class="fas fa-fire-flame-curved"></i></div>
-                <div class="project-title">Firewall CIS Benchmark Compliance Checker</div>
-                <p class="project-desc">Developed a tool to assess FortiGate firewall configurations against CIS
-                    Benchmarks, automatically identifying compliance gaps and generating actionable remediation reports.
-                </p>
-                <a href="https://github.com/priyam001/Fortigate_CIS_check" target="_blank" class="project-link"><i
-                        class="fab fa-github"></i> View on GitHub <i class="fas fa-arrow-right"
-                        style="font-size:10px"></i></a>
-            </div>
-            <div class="project-card">
-                <div class="project-icon"><i class="fas fa-dna"></i></div>
-                <div class="project-title">Malware Detection Using YARA Rules in SIEM</div>
-                <p class="project-desc">Research project focused on integrating YARA-based malware detection with SIEM
-                    platforms for enhanced threat detection capability, published in an international academic journal.
-                </p>
-                <a href="https://www.igi-global.com/chapter/malware-detection-using-yara-rules-in-siem/331310"
-                    target="_blank" class="project-link"><i class="fas fa-book-open"></i> Read Publication <i
-                        class="fas fa-arrow-right" style="font-size:10px"></i></a>
-            </div>
-        </div>
-    </section>
+      for (let i = 0; i < COUNT; i++) particles.push(makeParticle());
 
-    <!-- ACHIEVEMENTS -->
-    <section id="achievements">
-        <div class="section-label">// 05 — Achievements</div>
-        <h2 class="section-title">Impact by Numbers</h2>
-        <div class="section-rule"></div>
-        <div class="achievements-grid">
-            <div class="achievement-card">
-                <div class="achievement-num" data-target="30">0</div>
-                <div class="achievement-label">% Reduction in Mean Time to Respond</div>
-            </div>
-            <div class="achievement-card">
-                <div class="achievement-num" data-target="95">0</div>
-                <div class="achievement-label">%+ SLA Compliance Maintained</div>
-            </div>
-            <div class="achievement-card">
-                <div class="achievement-num" data-target="65">0</div>
-                <div class="achievement-label">+ Enterprise Applications Protected</div>
-            </div>
-            <div class="achievement-card">
-                <div class="achievement-num" data-target="4000">0</div>
-                <div class="achievement-label">+ Assets Vulnerability Assessed</div>
-            </div>
-            <div class="achievement-card">
-                <div class="achievement-num" data-target="80">0</div>
-                <div class="achievement-label">+ Cybersecurity Articles Published</div>
-            </div>
-            <div class="achievement-card">
-                <div class="achievement-num" data-target="200">0</div>
-                <div class="achievement-label">K+ Readers Reached</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CERTIFICATIONS -->
-    <section id="certifications">
-        <div class="section-label">// 06 — Certifications</div>
-        <h2 class="section-title">Credentials</h2>
-        <div class="section-rule"></div>
-        <div class="certs-grid" id="certs-grid">
-            <!-- dynamically rendered by JS -->
-        </div>
-    </section>
-
-    <!-- LIGHTBOX -->
-    <div id="lightbox" onclick="closeLightbox()">
-        <div class="lb-close" onclick="closeLightbox()"><i class="fas fa-times"></i></div>
-        <div class="lb-inner" onclick="event.stopPropagation()">
-            <img id="lb-img" src="" alt="">
-            <div id="lb-caption"></div>
-            <div id="lb-meta"></div>
-        </div>
-    </div>
-
-    <!-- EDUCATION -->
-    <section id="education">
-        <div class="section-label">// 07 — Education</div>
-        <h2 class="section-title">Academic Background</h2>
-        <div class="section-rule"></div>
-        <div class="edu-grid reveal">
-            <div class="edu-card">
-                <div class="edu-degree">M.Tech in Cybersecurity</div>
-                <div class="edu-school">Rashtriya Raksha University</div>
-                <div class="edu-location">Gandhinagar, Gujarat</div>
-            </div>
-            <div class="edu-card">
-                <div class="edu-degree">B.E. Information Technology</div>
-                <div class="edu-school">SVMIT (GTU)</div>
-                <div class="edu-location">Bharuch, Gujarat</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact">
-        <div class="section-label">// 08 — Contact</div>
-        <h2 class="section-title">Get In Touch</h2>
-        <div class="section-rule"></div>
-        <div class="contact-grid reveal">
-            <div class="contact-info">
-                <a href="mailto:priyampatel9911@gmail.com" class="contact-link">
-                    <i class="fas fa-envelope"></i>
-                    <div class="contact-detail">priyampatel9911@gmail.com</div>
-                </a>
-                <a href="tel:+919558709791" class="contact-link">
-                    <i class="fas fa-phone"></i>
-                    <div class="contact-detail">+91-9558709791</div>
-                </a>
-                <a href="https://linkedin.com/in/priyampat3l" target="_blank" class="contact-link">
-                    <i class="fab fa-linkedin"></i>
-                    <div class="contact-detail">linkedin.com/in/priyampat3l</div>
-                </a>
-                <a href="https://github.com/priyam001" target="_blank" class="contact-link">
-                    <i class="fab fa-github"></i>
-                    <div class="contact-detail">github.com/priyam001</div>
-                </a>
-            </div>
-            <div class="contact-form">
-                <div class="form-group">
-                    <label>Your Name</label>
-                    <input type="text" placeholder="John Smith" id="form-name">
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" placeholder="john@company.com" id="form-email">
-                </div>
-                <div class="form-group">
-                    <label>Message</label>
-                    <textarea placeholder="Tell me about the opportunity or just say hello..."
-                        id="form-message"></textarea>
-                </div>
-                <button class="btn btn-primary" onclick="sendMessage()" style="align-self:flex-start">
-                    <i class="fas fa-paper-plane"></i> Send Message
-                </button>
-                <div id="form-status"
-                    style="font-family:'DM Mono',monospace;font-size:12px;color:var(--green);display:none;">
-                    ✓ Message prepared — opening your mail client...
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer>
-        <p>© 2026 <span>Priyam Patel</span> — SOC Analyst & DFIR Specialist — Built with precision.</p>
-    </footer>
-
-    <!-- VISITOR COUNTER -->
-    <div id="visitor-counter" title="Total unique visits">
-        <span class="vc-dot"></span>
-        <span class="vc-count" id="vc-num">—</span>
-        <span class="vc-label">VISITORS</span>
-    </div>
-
-    <!-- SCROLL TOP -->
-    <div id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-        <i class="fas fa-chevron-up"></i>
-    </div>
-
-    <script>
-        // ─── LOADER ───
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-                setTimeout(() => document.getElementById('loader').remove(), 700);
-            }, 1400);
-        });
-
-        // ─── PARTICLES ───
-        (function () {
-            const canvas = document.getElementById('particles');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-
-            function resize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resize();
-            window.addEventListener('resize', resize);
-
-            for (let i = 0; i < 55; i++) {
-                particles.push({
-                    x: Math.random() * window.innerWidth,
-                    y: Math.random() * window.innerHeight,
-                    vx: (Math.random() - 0.5) * 0.3,
-                    vy: (Math.random() - 0.5) * 0.3,
-                    r: Math.random() * 1.5 + 0.3,
-                    alpha: Math.random() * 0.4 + 0.1
-                });
-            }
-
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles.forEach(p => {
-                    p.x += p.vx; p.y += p.vy;
-                    if (p.x < 0) p.x = canvas.width;
-                    if (p.x > canvas.width) p.x = 0;
-                    if (p.y < 0) p.y = canvas.height;
-                    if (p.y > canvas.height) p.y = 0;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(0,212,255,${p.alpha})`;
-                    ctx.fill();
-                });
-                // connections
-                for (let i = 0; i < particles.length; i++) {
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 120) {
-                            ctx.beginPath();
-                            ctx.strokeStyle = `rgba(0,212,255,${0.05 * (1 - dist / 120)})`;
-                            ctx.lineWidth = 0.5;
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.stroke();
-                        }
-                    }
-                }
-                requestAnimationFrame(draw);
-            }
-            draw();
-        })();
-
-        // ─── TYPING ANIMATION ───
-        const phrases = [
-            'SOC Analyst | L2/L3',
-            'DFIR Specialist',
-            'Threat Hunter',
-            'Detection Engineer',
-            'CrowdStrike | Sentinel',
-        ];
-        let pi = 0, ci = 0, deleting = false;
-        const el = document.getElementById('typed-text');
-        function type() {
-            const phrase = phrases[pi];
-            if (!deleting) {
-                el.textContent = phrase.slice(0, ci++);
-                if (ci > phrase.length) { deleting = true; setTimeout(type, 1600); return; }
-            } else {
-                el.textContent = phrase.slice(0, ci--);
-                if (ci < 0) { deleting = false; pi = (pi + 1) % phrases.length; ci = 0; }
-            }
-            setTimeout(type, deleting ? 40 : 80);
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        // move & wrap
+        for (let i = 0; i < COUNT; i++) {
+          const p = particles[i];
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0)  p.x = W;
+          if (p.x > W)  p.x = 0;
+          if (p.y < 0)  p.y = H;
+          if (p.y > H)  p.y = 0;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0,212,255,${p.a})`;
+          ctx.fill();
         }
-        setTimeout(type, 1600);
+        // connections (O(n²) — acceptable for n=55)
+        for (let i = 0; i < COUNT; i++) {
+          for (let j = i + 1; j < COUNT; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < CONNECT_DIST * CONNECT_DIST) {
+              const alpha = 0.05 * (1 - Math.sqrt(d2) / CONNECT_DIST);
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(0,212,255,${alpha})`;
+              ctx.lineWidth = 0.5;
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        raf = requestAnimationFrame(draw);
+      }
+      draw();
 
-        // ─── NAV SCROLL ───
-        const navbar = document.getElementById('navbar');
-        const navLinks = document.querySelectorAll('.nav-links a');
-        const sections = document.querySelectorAll('section, #hero');
+      // Pause animation when tab is hidden (battery/CPU savings)
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          cancelAnimationFrame(raf);
+        } else {
+          raf = requestAnimationFrame(draw);
+        }
+      });
+    })();
 
-        window.addEventListener('scroll', () => {
-            navbar.classList.toggle('scrolled', window.scrollY > 50);
-            document.getElementById('scroll-top').classList.toggle('visible', window.scrollY > 400);
+    // ─── TYPING ANIMATION ────────────────────────────────────
+    (function initTyping() {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      const el = document.getElementById('typed-text');
+      if (!el) return;
 
-            let current = '';
-            sections.forEach(s => {
-                if (window.scrollY >= s.offsetTop - 120) current = s.id;
-            });
+      if (prefersReduced) {
+        el.textContent = 'SOC Analyst | DFIR | Threat Hunter';
+        return;
+      }
+
+      const phrases = [
+        'SOC Analyst | L2/L3',
+        'DFIR Specialist',
+        'Threat Hunter',
+        'Detection Engineer',
+        'CrowdStrike | Sentinel',
+      ];
+      let pi = 0, ci = 0, deleting = false;
+
+      function type() {
+        const phrase = phrases[pi];
+        if (!deleting) {
+          el.textContent = phrase.slice(0, ci++);
+          if (ci > phrase.length) { deleting = true; setTimeout(type, 1600); return; }
+        } else {
+          el.textContent = phrase.slice(0, ci--);
+          if (ci < 0) { deleting = false; pi = (pi + 1) % phrases.length; ci = 0; }
+        }
+        setTimeout(type, deleting ? 40 : 80);
+      }
+      setTimeout(type, 1600);
+    })();
+
+    // ─── NAV: SCROLL BEHAVIOUR ───────────────────────────────
+    (function initNav() {
+      const navbar   = document.getElementById('navbar');
+      const navLinks = document.querySelectorAll('.nav-links a');
+      const sections = document.querySelectorAll('section, #hero');
+      const scrollBtn = document.getElementById('scroll-top');
+
+      // Use IntersectionObserver instead of scroll events for active link
+      const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const id = e.target.id;
             navLinks.forEach(a => {
-                a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+              a.classList.toggle('active', a.getAttribute('href') === '#' + id);
             });
+          }
         });
+      }, { rootMargin: '-40% 0px -55% 0px' });
 
-        // ─── HAMBURGER ───
-        function toggleMenu() {
-            document.getElementById('navLinks').classList.toggle('open');
-        }
-        document.querySelectorAll('.nav-links a').forEach(a => {
-            a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+      sections.forEach(s => sectionObserver.observe(s));
+
+      // Shadow on scroll + scroll-top button (lightweight scroll listener)
+      window.addEventListener('scroll', debounce(() => {
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
+        scrollBtn.classList.toggle('visible', window.scrollY > 400);
+      }, 40), { passive: true });
+    })();
+
+    // ─── HAMBURGER ───────────────────────────────────────────
+    (function initHamburger() {
+      const btn   = document.getElementById('hamburger');
+      const menu  = document.getElementById('navLinks');
+      if (!btn || !menu) return;
+
+      btn.addEventListener('click', () => {
+        const open = menu.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+      });
+
+      // Close on link click
+      menu.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          menu.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
         });
+      });
 
-        // ─── REVEAL ON SCROLL ───
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => {
-                if (e.isIntersecting) {
-                    e.target.classList.add('visible');
-                    // Counter animation
-                    const counter = e.target.querySelector('[data-target]') || (e.target.hasAttribute('data-target') ? e.target : null);
-                    if (counter) animateCounter(counter);
-                }
-            });
-        }, { threshold: 0.12 });
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+          menu.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
 
-        document.querySelectorAll('.reveal, .timeline-item, .skill-category, .project-card, .achievement-card, .cert-card').forEach(el => observer.observe(el));
+    // ─── COUNTER ANIMATION ───────────────────────────────────
+    function animateCounter(el) {
+      if (el._animated) return;
+      el._animated = true;
 
-        // Counter for achievement/stat numbers
-        const counterObs = new IntersectionObserver((entries) => {
-            entries.forEach(e => {
-                if (e.isIntersecting) {
-                    animateCounter(e.target);
-                    counterObs.unobserve(e.target);
-                }
-            });
-        }, { threshold: 0.5 });
-        document.querySelectorAll('[data-target]').forEach(el => counterObs.observe(el));
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      const target = +el.getAttribute('data-target');
+      if (prefersReduced) { el.textContent = target.toLocaleString(); return; }
 
-        function animateCounter(el) {
-            const target = +el.getAttribute('data-target');
-            const duration = 1500;
-            const step = target / (duration / 16);
-            let current = 0;
-            const timer = setInterval(() => {
-                current += step;
-                if (current >= target) { current = target; clearInterval(timer); }
-                el.textContent = Math.floor(current).toLocaleString();
-            }, 16);
+      const duration = 1400;
+      const fps      = 60;
+      const steps    = duration / (1000 / fps);
+      const step     = target / steps;
+      let   current  = 0;
+
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          el.textContent = target.toLocaleString();
+          clearInterval(timer);
+        } else {
+          el.textContent = Math.floor(current).toLocaleString();
+        }
+      }, 1000 / fps);
+    }
+
+    // ─── SCROLL REVEAL (unified IntersectionObserver) ────────
+    (function initReveal() {
+      const options = { threshold: 0.1 };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, idx) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+
+          // Stagger cards inside grids
+          const delay = el.dataset.delay || 0;
+          setTimeout(() => {
+            el.classList.add('visible');
+            // Trigger counter animation if applicable
+            const counter = el.querySelector('[data-target]');
+            if (counter) animateCounter(counter);
+            if (el.hasAttribute('data-target')) animateCounter(el);
+          }, +delay);
+
+          observer.unobserve(el);
+        });
+      }, options);
+
+      // Assign stagger delays to grid children
+      function stagger(selector, increment = 60) {
+        document.querySelectorAll(selector).forEach((el, i) => {
+          el.dataset.delay = i * increment;
+        });
+      }
+      stagger('.skill-category',  70);
+      stagger('.project-card',    80);
+      stagger('.achievement-card',60);
+      stagger('.cert-card',       55);
+      stagger('.stat-card',       80);
+
+      const targets = [
+        '.reveal', '.timeline-item', '.skill-category',
+        '.project-card', '.achievement-card', '[data-target]'
+      ];
+      document.querySelectorAll(targets.join(',')).forEach(el => observer.observe(el));
+    })();
+
+    // ─── CERTIFICATE DATA ─────────────────────────────────────
+    // Edit CERTIFICATES array to add/remove certs.
+    // image: path relative to index.html (e.g. "Certificate/file.jpg"), or null.
+    const CERTIFICATES = [
+      {
+        name:   "CrowdStrike Incident Response & Threat Hunting",
+        issuer: "CrowdStrike",
+        year:   "2026",
+        image:  null
+      },
+      {
+        name:   "Cloud Application Protection Certification",
+        issuer: "Radware",
+        year:   "2026",
+        image:  "Certificate/1771057719768.jpg"
+      },
+      {
+        name:   "Application Protection",
+        issuer: "Radware",
+        year:   "2026",
+        image:  "Certificate/1771057719732.jpg"
+      },
+      {
+        name:   "Linux Privilege Escalation for Beginners",
+        issuer: "TCM Security",
+        year:   "2024",
+        image:  "Certificate/1704905398096.jpg"
+      },
+      {
+        name:   "Windows Privilege Escalation for Beginners",
+        issuer: "TCM Security",
+        year:   "2024",
+        image:  "Certificate/1704905398147.jpg"
+      },
+      {
+        name:   "Cyber Threat Intelligence 101",
+        issuer: "arcX",
+        year:   "2023",
+        image:  "Certificate/1691027716657.jpg"
+      },
+      {
+        name:   "MITRE ATT&CK & Purple Teaming Fundamentals",
+        issuer: "MITRE",
+        year:   "—",
+        image:  null
+      }
+      // ─── ADD MORE BELOW ───
+      // { name:"Your Cert", issuer:"Issuer", year:"2025", image:"Certificate/file.jpg" },
+    ];
+
+    // ─── RENDER CERTS ─────────────────────────────────────────
+    (function renderCerts() {
+      const grid = document.getElementById('certs-grid');
+      if (!grid) return;
+
+      const certObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const delay = +(e.target.dataset.delay || 0);
+            setTimeout(() => e.target.classList.add('visible'), delay);
+            certObserver.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.08 });
+
+      CERTIFICATES.forEach((cert, i) => {
+        const card = document.createElement('article');
+        card.className = 'cert-card' + (cert.image ? ' has-image' : '');
+        card.setAttribute('role', 'listitem');
+        card.dataset.delay = String(i * 55);
+
+        if (cert.image) {
+          card.setAttribute('tabindex', '0');
+          card.setAttribute('role', 'button');
+          card.setAttribute('aria-label', `View certificate: ${cert.name}`);
+          const open = () => openLightbox(cert.image, cert.name, cert.issuer + ' · ' + cert.year);
+          card.addEventListener('click', open);
+          card.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+          });
         }
 
-        // ════════════════════════════════════════════════════
-        // ⚡ CERTIFICATE CONFIG — edit this array to add/remove certs
-        // To add a new cert: copy one object, fill in the fields.
-        // image: path to file in Certificate/ folder (leave null if no image)
-        // ════════════════════════════════════════════════════
-        const CERTIFICATES = [
-            {
-                name: "CrowdStrike Incident Response & Threat Hunting",
-                issuer: "CrowdStrike",
-                year: "2026",
-                image: null   // no image yet — upload to Certificate/ and add filename
-            },
-            {
-                name: "Cloud Application Protection Certification",
-                issuer: "Radware",
-                year: "2026",
-                image: "Certificate/1771057719768.jpg"
-            },
-            {
-                name: "Application Protection",
-                issuer: "Radware",
-                year: "2026",
-                image: "Certificate/1771057719732.jpg"
-            },
-            {
-                name: "Linux Privilege Escalation for Beginners",
-                issuer: "TCM Security",
-                year: "2024",
-                image: "Certificate/1704905398096.jpg"
-            },
-            {
-                name: "Windows Privilege Escalation for Beginners",
-                issuer: "TCM Security",
-                year: "2024",
-                image: "Certificate/1704905398147.jpg"
-            },
-            {
-                name: "Cyber Threat Intelligence 101",
-                issuer: "arcX",
-                year: "2023",
-                image: "Certificate/1691027716657.jpg"
-            },
-            {
-                name: "MITRE ATT&CK & Purple Teaming Fundamentals",
-                issuer: "MITRE",
-                year: "—",
-                image: null
-            }
-            // ── ADD MORE BELOW ──
-            // { name: "Your Cert Name", issuer: "Issuer", year: "2025", image: "Certificate/filename.jpg" },
-        ];
+        card.innerHTML = cert.image
+          ? `<div class="cert-thumb-wrap" aria-hidden="true">
+               <img src="${cert.image}" alt="Certificate: ${cert.name}" loading="lazy">
+               <div class="cert-overlay"><i class="fas fa-expand-alt"></i></div>
+             </div>`
+          : `<div class="cert-no-img" aria-hidden="true">
+               <i class="fas fa-certificate"></i>
+             </div>`;
 
-        // ─── RENDER CERTS DYNAMICALLY ───
-        (function renderCerts() {
-            const grid = document.getElementById('certs-grid');
-            if (!grid) return;
-            grid.innerHTML = '';
+        card.innerHTML += `
+          <div class="cert-info">
+            <div class="cert-name">${cert.name}</div>
+            <div class="cert-issuer">${cert.issuer}</div>
+            <div class="cert-year">${cert.year}</div>
+            ${cert.image ? '<span class="cert-badge"><i class="fas fa-eye" style="font-size:9px;margin-right:4px" aria-hidden="true"></i>Click to view</span>' : ''}
+          </div>`;
 
-            CERTIFICATES.forEach((cert, i) => {
-                const card = document.createElement('div');
-                card.className = 'cert-card' + (cert.image ? ' has-image' : '');
-                if (cert.image) {
-                    card.onclick = () => openLightbox(cert.image, cert.name, cert.issuer + ' · ' + cert.year);
-                }
+        grid.appendChild(card);
+        certObserver.observe(card);
+      });
+    })();
 
-                // thumbnail or placeholder
-                if (cert.image) {
-                    card.innerHTML += `
-        <div class="cert-thumb-wrap">
-          <img src="${cert.image}" alt="${cert.name}" loading="lazy">
-          <div class="cert-overlay"><i class="fas fa-expand-alt"></i></div>
-        </div>`;
-                } else {
-                    card.innerHTML += `
-        <div class="cert-no-img">
-          <i class="fas fa-certificate"></i>
-        </div>`;
-                }
+    // ─── LIGHTBOX ────────────────────────────────────────────
+    function openLightbox(src, caption, meta) {
+      const lb  = document.getElementById('lightbox');
+      const img = document.getElementById('lb-img');
+      img.src = src;
+      img.alt = caption;
+      document.getElementById('lb-caption').textContent = caption;
+      document.getElementById('lb-meta').textContent    = meta || '';
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // Move focus to close button for keyboard users
+      lb.querySelector('.lb-close').focus();
+    }
 
-                card.innerHTML += `
-      <div class="cert-info">
-        <div class="cert-name">${cert.name}</div>
-        <div class="cert-issuer">${cert.issuer}</div>
-        <div class="cert-year">${cert.year}</div>
-        ${cert.image ? '<span class="cert-badge"><i class="fas fa-eye" style="font-size:9px;margin-right:4px"></i>Click to view</span>' : ''}
-      </div>`;
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
 
-                // staggered animation delay
-                card.style.transitionDelay = (i * 60) + 'ms';
-                grid.appendChild(card);
-            });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeLightbox();
+    });
 
-            // re-observe new cards for scroll reveal
-            document.querySelectorAll('.cert-card').forEach(el => observer.observe(el));
-        })();
 
-        // ─── LIGHTBOX ───
-        function openLightbox(src, caption, meta) {
-            document.getElementById('lb-img').src = src;
-            document.getElementById('lb-caption').textContent = caption;
-            document.getElementById('lb-meta').textContent = meta || '';
-            document.getElementById('lightbox').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('open');
-            document.body.style.overflow = '';
-        }
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+  </script>
 
-        // ─── CONTACT FORM ───
-        function sendMessage() {
-            const name = document.getElementById('form-name').value.trim();
-            const email = document.getElementById('form-email').value.trim();
-            const msg = document.getElementById('form-message').value.trim();
-            if (!name || !email || !msg) { alert('Please fill in all fields.'); return; }
-            const subject = encodeURIComponent('Portfolio Contact from ' + name);
-            const body = encodeURIComponent('From: ' + name + '\nEmail: ' + email + '\n\n' + msg);
-            window.location.href = 'mailto:priyampatel9911@gmail.com?subject=' + subject + '&body=' + body;
-            const status = document.getElementById('form-status');
-            status.style.display = 'block';
-            // auto-hide after 4 seconds
-            setTimeout(() => { status.style.display = 'none'; }, 4000);
-        }
-
-        // ─── VISITOR COUNTER ───
-        // api.counterapi.dev — free, no signup, persists globally across all visitors.
-        // sessionStorage prevents double-count on refresh within same session.
-        (async function () {
-            var vcEl = document.getElementById('vc-num');
-            if (!vcEl) return;
-
-            var NS = 'priyampatel-portfolio-2026';
-            var KEY = 'visits-v2';
-            var seen = sessionStorage.getItem('pp_v');
-
-            try {
-                var url = seen
-                    ? ('https://api.counterapi.dev/v1/' + NS + '/' + KEY)
-                    : ('https://api.counterapi.dev/v1/' + NS + '/' + KEY + '/up');
-
-                if (!seen) sessionStorage.setItem('pp_v', '1');
-
-                var res = await fetch(url);
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                var data = await res.json();
-                var total = data.count || data.value || 0;
-
-                var cur = Math.max(0, total - 40);
-                var step = Math.max(1, Math.ceil((total - cur) / 25));
-                var t = setInterval(function () {
-                    cur = Math.min(cur + step, total);
-                    vcEl.textContent = cur.toLocaleString();
-                    if (cur >= total) clearInterval(t);
-                }, 35);
-
-            } catch (e) {
-                vcEl.textContent = '—';
-            }
-        })();
-
-    </script>
 </body>
-
 </html>
